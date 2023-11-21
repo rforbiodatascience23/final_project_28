@@ -14,7 +14,7 @@ library(tibble)
 ### Main table
 
 ```{r}
-raw_table <- read_csv(file = "_raw/GPL23159-69552_table.csv")
+raw_table <- read_csv(file = "../_raw/GPL23159-69552_table.csv")
 
 #set the column names
 colnames(raw_table) <- raw_table[10, ]
@@ -32,7 +32,7 @@ raw_table <- raw_table |> select(c(ID,type,SPOT_ID))
 ### Responder table
 
 ```{r}
-responder <- read_csv(file = "_raw/GSM2525643_Responder1_plus6.csv")
+responder <- read_csv(file = "../_raw/GSM2525643_Responder1_plus6.csv")
 
 # set the correct column names
 responder <- responder |> rename(ID_REF = 1,
@@ -45,7 +45,7 @@ responder <- responder[-1:-2, ]
 ### Non Responder table
 
 ```{r}
-non_responder <- read_csv(file = "_raw/GSM2525651_Nonresponder1_plus6.csv")
+non_responder <- read_csv(file = "../_raw/GSM2525651_Nonresponder1_plus6.csv")
 
 # set the correct column names
 non_responder <- non_responder |> rename(ID_REF = 1,
