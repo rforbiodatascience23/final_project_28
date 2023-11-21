@@ -1,0 +1,50 @@
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+raw_data <- read_csv(file = "../_raw/brca_data_w_subtypes.csv.zip")
+raw_data
+
+last_columns <- raw_data |> 
+    select(last_col(4):last_col())
+
+last_column |> sample_n(20)
+table(raw_data$histological.type)
+
+copy_nr_variations <- raw_data |> select(matches("cn_"))
+mutations <- raw_data |> select(matches("mu_"))
+gene_expression <- raw_data |> select(matches("rs_"))
+protein_levels <- raw_data |> select(matches("pp_"))
+```
+
+
+```{r}
+copy_nr_names <- raw_data |>
+  select(starts_with("cn_")) |>
+  names() |>
+  str_remove("cn_")
+
+expression_names <- raw_data |>
+  select(starts_with("rs_")) |>
+  names() |>
+  str_remove("rs_")
+
+mutation_names <- raw_data |> 
+  select(starts_with("mu_")) |>
+  names() |>
+  str_remove("mu_")
+
+protein_names <- raw_data |> 
+  select(starts_with("pp_")) |>
+  names() |>
+  str_remove("pp_")
+
+# Step 2: Find common gene names
+copy_vs_exp <- intersect(copy_nr_names, expression_names)
+copy_vs_mut <- intersect(copy_nr_names, mutation_names)
+exp_vs_mut <- intersect(expression_names, mutation_names)
+
+```
+
