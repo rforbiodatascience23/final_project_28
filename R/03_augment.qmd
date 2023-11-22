@@ -29,10 +29,18 @@ transformed_data_with_cancer <- transformed_data_with_cancer |>
 #free memory by removing unnecessary objects
 remove(transformed_data, id_and_cancer_type)
 
+#scale data
+scale_this <- function(x){
+  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
+}
+
+transformed_data_with_cancer <- transformed_data_with_cancer |>
+  mutate(across(c(-1,-2,-3), ~ as.numeric(scale(.))))
+
 #write to csv
 write.csv(transformed_data_with_cancer, "../data/03_dat_aug.csv", row.names = FALSE)
 
 #free memory
-remove(ordered_raw_data_with_cancer)
+remove(transformed_data_with_cancer)
 ```
 

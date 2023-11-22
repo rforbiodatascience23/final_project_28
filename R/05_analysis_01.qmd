@@ -7,24 +7,47 @@ library("purrr")
 
 ```{r}
 cancer_data <- read_csv("../data/03_dat_aug.csv")
+cancer_data |> select(3:14) |>
+  pivot_longer(cols = -cancer_type_number,
+               names_to = "gene",
+               values_to = "expr") |>
+  ggplot(aes(x = gene, y = expr)) + geom_boxplot()
+```
+
+<!-- ```{r} -->
+
+<!-- my_first_model <- cancer_data |> -->
+<!--   lm(formula = X90857_at ~ cancer_type_number, -->
+<!--      data = _) -->
+
+<!-- my_first_model -->
+
+<!-- ``` -->
+```{r}
+scale_this <- function(x){
+  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
+}
+
+cancer_data_rescaled <- cancer_data |>
+  mutate(across(c(-1,-2,-3), ~ as.numeric(scale(.))))
+
+cancer_data_rescaled |> select(3:14) |>
+  pivot_longer(cols = -cancer_type_number,
+               names_to = "gene",
+               values_to = "expr") |>
+  ggplot(aes(x = gene, y = expr)) + geom_boxplot()
+
+remove(cancer_data)
 ```
 
 ```{r}
-
-my_first_model <- cancer_data |>
-  lm(formula = X90857_at ~ cancer_type_number,
-     data = _)
-
-my_first_model
-
-```
-
-```{r}
-cancer_data_long <- cancer_data |>
-  select(!cancer) |> select(!ID)|>
+cancer_data_long <- cancer_data_rescaled |>
+  select(!cancer) |>
   pivot_longer(cols = -cancer_type_number,
                names_to = "gene",
                values_to = "expr")
+
+
 ```
 
 ```{r}
@@ -42,6 +65,7 @@ cancer_data_long_nested <- cancer_data_long_nested |>
   mutate(model_object = map(.x = data,
       .f = ~lm(formula = expr ~ cancer_type_number,
       data = .x)))
+
 ```
 
 ```{r}
@@ -56,6 +80,8 @@ cancer_data_long_nested <- cancer_data_long_nested |>
 ```{r}
 cancer_data_estimates <- cancer_data_long_nested |>
   unnest(model_object_tidy)
+
+remove(cancer_data_long_nested)
 ```
 
 
@@ -92,5 +118,34 @@ forest_plot <- cancer_data_estimates |>
   theme(axis.text.y = element_text(size = 6.5), plot.title.position = "plot") +
   geom_vline(xintercept = 0)
 forest_plot
+```
+
+```{r}
+#get list of significants
+sig_list <- cancer_data_estimates |>
+  filter(is_significant == "yes") |>
+  select(gene) |>
+  pull() |>
+  as.character()
+
+
+# filter data to only get significant rescales
+cancer_data_rescaled_sig <- cancer_data_rescaled |> select(ID, cancer, cancer_type_number, all_of(sig_list))
+
+heatmap <- cancer_data_rescaled_sig |>
+  pivot_longer(cols = -c(ID, cancer), names_to = "gene", values_to = "expr") |> 
+  ggplot(aes(x=gene, y=ID, fill=expr)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "#075AFF",
+                       mid = "white",
+                       high = "#FF0000") +
+  theme(axis.text.x = element_text(angle=45, hjust = 1, size = 5),
+          axis.text.y = element_text(size = 5),
+          legend.position = "bottom")
+heatmap 
+
+
+
+
 ```
 
