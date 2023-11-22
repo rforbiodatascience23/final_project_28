@@ -22,16 +22,14 @@ remove(raw_data, raw_data_2)
 raw_data_merged <- raw_data_merged |>
   select(-matches("^call\\.\\.\\.\\d+"))
 
+#edit column names
 raw_data_merged <- raw_data_merged |>
-  mutate(`Gene_Description` = raw_data_merged$`Gene Description`,
-         `Gene_Accession_Number` = raw_data_merged$`Gene Accession Number`) |>
-  select(-c(`Gene Description`, `Gene Accession Number`)) |>
-  select(Gene_Description, Gene_Accession_Number, everything())
+  select(!`Gene Description`) |>
+  rename("Gene_Accession_Number" = `Gene Accession Number`)
 
 #pivot data 
 transformed_data <- raw_data_merged |>
-  pivot_longer(cols = -c(1,2), names_to = "ID", values_to = "expression") |> 
-  select(!Gene_Description) |>
+  pivot_longer(cols = -Gene_Accession_Number, names_to = "ID", values_to = "expression") |> 
   pivot_wider( names_from = Gene_Accession_Number, values_from = expression)
 
 #remove unnecessary objects to free memory
