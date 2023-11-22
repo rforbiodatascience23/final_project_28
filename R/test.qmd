@@ -1,0 +1,75 @@
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+#load the data
+id_and_cancer_type <- read_csv("../_raw/actual.csv")
+raw_data <- read_csv("../_raw/data_set_ALL_AML_independent.csv")
+raw_data_2 <- read_csv("../_raw/data_set_ALL_AML_train.csv")
+
+#merge the two data frames (we will not be doing model training)
+raw_data_merged <- merge(x = raw_data, y = raw_data_2, by.x = c("Gene Description", "Gene Accession Number"),  by.y = c("Gene Description", "Gene Accession Number"))
+
+#remove objects to free memory
+remove(raw_data, raw_data_2)
+```
+
+
+```{r}
+#load the second half
+raw_data_merged <- raw_data_merged |>
+  select(-matches("^call\\.\\.\\.\\d+"))
+
+#sort columns
+sorted_columns <- raw_data_merged |>
+  select(-c(1,2)) |>
+  names() |>
+  as.numeric() |>
+  sort() |>
+  as.character()
+
+#make a new object with sorted columns
+ordered_nr_cols <- raw_data_merged[, sorted_columns]
+ordered_raw_data <- ordered_nr_cols |>
+  mutate(`Gene_Description` = raw_data_merged$`Gene Description`, 
+         `Gene_Accession_Number` = raw_data_merged$`Gene Accession Number`) |>
+  select(Gene_Description, Gene_Accession_Number, everything())
+
+#free memory by removing unnecessary objects
+remove(ordered_nr_cols, raw_data_merged)
+
+#pivot data 
+ordered_raw_data <- ordered_raw_data |>
+  pivot_longer(cols = -c(1,2), names_to = "ID", values_to = "expression") |>
+  select(!Gene_Description) |>
+  pivot_wider( names_from = Gene_Accession_Number, values_from = expression)
+
+#add numeric values for the cancer types 
+id_and_cancer_type <- id_and_cancer_type |>
+  mutate(
+    cancer_type_number = case_when(
+      cancer == "ALL" ~ 0,
+      cancer == "AML" ~ 1
+    )
+  ) 
+
+#merge the large dataframe with the small based on ID
+ordered_raw_data_with_cancer <- merge(ordered_raw_data, id_and_cancer_type, by.x = "ID", by.y = "patient")
+
+#resort the dataframe and shift around some columns
+ordered_raw_data_with_cancer <- ordered_raw_data_with_cancer |>
+  select(ID, cancer, cancer_type_number, everything()) |>
+  mutate(ID = sapply(ID, as.numeric)) |>
+  arrange(ID)
+
+#free memory by removing unnecessary objects
+remove(ordered_raw_data, id_and_cancer_type, sorted_columns)
+
+write.csv(ordered_raw_data_with_cancer, "../data/tidied_data.csv", row.names = FALSE)
+
+#test_read <- read_csv("../data/tidied_data.csv")
+#remove(test_read)
+```
+
