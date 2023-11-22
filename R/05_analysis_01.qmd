@@ -1,0 +1,96 @@
+```{r}
+library("tidyverse")
+library("patchwork")
+library("broom")
+library("purrr")
+```
+
+```{r}
+cancer_data <- read_csv("../data/03_dat_aug.csv")
+```
+
+```{r}
+
+my_first_model <- cancer_data |>
+  lm(formula = X90857_at ~ cancer_type_number,
+     data = _)
+
+my_first_model
+
+```
+
+```{r}
+cancer_data_long <- cancer_data |>
+  select(!cancer) |> select(!ID)|>
+  pivot_longer(cols = -cancer_type_number,
+               names_to = "gene",
+               values_to = "expr")
+```
+
+```{r}
+cancer_data_long_nested <- cancer_data_long |>
+  group_by(gene) |>
+  nest() |>
+  ungroup()
+
+
+```
+
+```{r}
+cancer_data_long_nested <- cancer_data_long_nested |>
+  group_by(gene) |>
+  mutate(model_object = map(.x = data,
+      .f = ~lm(formula = expr ~ cancer_type_number,
+      data = .x)))
+```
+
+```{r}
+cancer_data_long_nested <- cancer_data_long_nested |>
+  mutate(model_object_tidy = map(.x = model_object, 
+                                 .f = ~tidy(x = .x,
+                                            conf.int = TRUE,
+                                            conf.level = 0.95)))
+
+```
+
+```{r}
+cancer_data_estimates <- cancer_data_long_nested |>
+  unnest(model_object_tidy)
+```
+
+
+```{r}
+cancer_data_estimates <- cancer_data_estimates |>
+  filter(term == "cancer_type_number") |>
+  select(gene, p.value, estimate, conf.low, conf.high) |>
+  ungroup()
+```
+
+```{r}
+cancer_data_estimates <- cancer_data_estimates |>
+  mutate(q.value = p.adjust(p = p.value, method = p.adjust.methods)) |>
+  mutate(is_significant = case_when(
+    q.value > 0.05 ~ "no",
+    q.value <= 0.05 ~ "yes")) |>
+  mutate(is_significant = factor(is_significant,
+                            levels =  c("no", "yes")))
+```
+
+```{r}
+forest_plot <- cancer_data_estimates |>
+  filter(is_significant == "yes") |>
+  ggplot(aes(x = estimate,
+             y = fct_reorder(gene, estimate),
+             xmin = conf.low,
+             xmax = conf.high)) +
+  geom_errorbarh() +
+  geom_point() +
+  labs(title = "Gene expression diff between cancers",
+       x = "Estimates (95% CIs)",
+       y = "Gene") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 6.5), plot.title.position = "plot") +
+  geom_vline(xintercept = 0)
+forest_plot
+```
+
