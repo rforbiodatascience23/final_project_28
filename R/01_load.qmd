@@ -1,50 +1,55 @@
+# Load and clean data
+
+## Libraries
+
 ```{r}
 library(tidyverse)
+library(dplyr)
+library(readr)
+library(tibble)
 ```
 
+## Load files
+
+### Main table
 
 ```{r}
-raw_data <- read_csv(file = "../_raw/brca_data_w_subtypes.csv.zip")
-raw_data
+raw_table <- read_csv(file = "../_raw/GPL23159-69552_table.csv")
 
-last_columns <- raw_data |> 
-    select(last_col(4):last_col())
+#set the column names
+colnames(raw_table) <- raw_table[10, ]
 
-last_column |> sample_n(20)
-table(raw_data$histological.type)
+# change the name of the 9th column to "type"
+raw_table <- raw_table |> rename(type = 9)
 
-copy_nr_variations <- raw_data |> select(matches("cn_"))
-mutations <- raw_data |> select(matches("mu_"))
-gene_expression <- raw_data |> select(matches("rs_"))
-protein_levels <- raw_data |> select(matches("pp_"))
+# remove the first 10 rows from the table
+raw_table <- raw_table[-1:-10,]
+
+# filter that columns and keep only "ID" "type" and "SPOT_ID"
+raw_table <- raw_table |> select(c(ID,type,SPOT_ID))
 ```
 
+### Responder table
 
 ```{r}
-copy_nr_names <- raw_data |>
-  select(starts_with("cn_")) |>
-  names() |>
-  str_remove("cn_")
+responder <- read_csv(file = "../_raw/GSM2525643_Responder1_plus6.csv")
 
-expression_names <- raw_data |>
-  select(starts_with("rs_")) |>
-  names() |>
-  str_remove("rs_")
-
-mutation_names <- raw_data |> 
-  select(starts_with("mu_")) |>
-  names() |>
-  str_remove("mu_")
-
-protein_names <- raw_data |> 
-  select(starts_with("pp_")) |>
-  names() |>
-  str_remove("pp_")
-
-# Step 2: Find common gene names
-copy_vs_exp <- intersect(copy_nr_names, expression_names)
-copy_vs_mut <- intersect(copy_nr_names, mutation_names)
-exp_vs_mut <- intersect(expression_names, mutation_names)
+# set the correct column names
+responder <- responder |> rename(ID_REF = 1,
+                                 VALUE = 2)
+# remove the first 2 rows
+responder <- responder[-1:-2, ]
 
 ```
 
+### Non Responder table
+
+```{r}
+non_responder <- read_csv(file = "../_raw/GSM2525651_Nonresponder1_plus6.csv")
+
+# set the correct column names
+non_responder <- non_responder |> rename(ID_REF = 1,
+                                 VALUE = 2)
+# remove the first 2 rows
+non_responder <- non_responder[-1:-2, ]
+```
