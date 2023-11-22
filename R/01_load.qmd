@@ -1,55 +1,22 @@
 # Load and clean data
 
 ## Libraries
-
 ```{r}
 library(tidyverse)
-library(dplyr)
-library(readr)
-library(tibble)
 ```
 
-## Load files
-
-### Main table
 
 ```{r}
-raw_table <- read_csv(file = "../_raw/GPL23159-69552_table.csv")
+#load the data
+id_and_cancer_type <- read_csv("../_raw/actual.csv")
+raw_data <- read_csv("../_raw/data_set_ALL_AML_independent.csv")
+raw_data_2 <- read_csv("../_raw/data_set_ALL_AML_train.csv")
 
-#set the column names
-colnames(raw_table) <- raw_table[10, ]
+#merge the two data frames (we will not be doing model training)
+raw_data_merged <- merge(x = raw_data, y = raw_data_2, by.x = c("Gene Description", "Gene Accession Number"),  by.y = c("Gene Description", "Gene Accession Number"))
 
-# change the name of the 9th column to "type"
-raw_table <- raw_table |> rename(type = 9)
-
-# remove the first 10 rows from the table
-raw_table <- raw_table[-1:-10,]
-
-# filter that columns and keep only "ID" "type" and "SPOT_ID"
-raw_table <- raw_table |> select(c(ID,type,SPOT_ID))
-```
-
-### Responder table
-
-```{r}
-responder <- read_csv(file = "../_raw/GSM2525643_Responder1_plus6.csv")
-
-# set the correct column names
-responder <- responder |> rename(ID_REF = 1,
-                                 VALUE = 2)
-# remove the first 2 rows
-responder <- responder[-1:-2, ]
-
-```
-
-### Non Responder table
-
-```{r}
-non_responder <- read_csv(file = "../_raw/GSM2525651_Nonresponder1_plus6.csv")
-
-# set the correct column names
-non_responder <- non_responder |> rename(ID_REF = 1,
-                                 VALUE = 2)
-# remove the first 2 rows
-non_responder <- non_responder[-1:-2, ]
+#remove objects to free memory
+write.csv(raw_data_merged, "../data/01_dat_load_1.csv", row.names = FALSE)
+write.csv(id_and_cancer_type, "../data/01_dat_load_2.csv", row.names = FALSE)
+remove(raw_data, raw_data_2, raw_data_merged, id_and_cancer_type)
 ```

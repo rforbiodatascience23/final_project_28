@@ -1,0 +1,38 @@
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+id_and_cancer_type <- read_csv("../data/01_dat_load_2.csv")
+transformed_data <- read_csv("../data/02_dat_clean.csv")
+
+#add numeric values for the cancer types 
+id_and_cancer_type <- id_and_cancer_type |>
+  mutate(
+    cancer_type_number = case_when(
+      cancer == "ALL" ~ 0,
+      cancer == "AML" ~ 1
+    )
+  ) 
+
+#merge the large dataframe with the small based on ID
+transformed_data_with_cancer <- merge(x = transformed_data, y = id_and_cancer_type, by.x = "ID", by.y = "patient")
+
+
+#re-sort the dataframe and shift around some columns
+transformed_data_with_cancer <- transformed_data_with_cancer |>
+  select(ID, cancer, cancer_type_number, everything()) |>
+  mutate(ID = sapply(ID, as.numeric)) |>
+  arrange(ID)
+
+#free memory by removing unnecessary objects
+remove(transformed_data, id_and_cancer_type)
+
+#write to csv
+write.csv(transformed_data_with_cancer, "../data/03_dat_aug.csv", row.names = FALSE)
+
+#free memory
+remove(ordered_raw_data_with_cancer)
+```
+
