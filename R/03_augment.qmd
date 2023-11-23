@@ -26,6 +26,8 @@ transformed_data_with_cancer <- transformed_data_with_cancer |>
   mutate(ID = sapply(ID, as.numeric)) |>
   arrange(ID)
 
+write.csv(transformed_data_with_cancer, "../data/03_dat_tidy.csv", row.names = FALSE)
+
 #free memory by removing unnecessary objects
 remove(transformed_data, id_and_cancer_type)
 

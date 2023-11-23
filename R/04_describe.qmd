@@ -1,33 +1,92 @@
+# Description
+
+## Load libraries
+
 ```{r}
+#| echo: false
 library(tidyverse)
+library(dplyr)
 ```
 
+## Load data
 
 ```{r}
-cancer_data <- read_csv("../data/03_dat_aug.csv")
+cancer_data_aug <- read_csv("../data/03_dat_aug.csv")
+cancer_data <- read_csv("../data/03_dat_tidy.csv")
+
+cancer_mean <- cancer_data |>
+  group_by(cancer) |>
+  summarize(across(c(-ID,-cancer_type_number),
+                   list(mean=mean),
+                        na.rm=TRUE))
 ```
+
+## Significant genes
+
+### ALL
 
 ```{r}
-cancer_data_long <- cancer_data |>
-  pivot_longer(cols = -c(ID, cancer, cancer_type_number), names_to = "gene", values_to = "expression")
+top_all_means_long <- cancer_mean |>
+  pivot_longer(cols = -cancer,
+               names_to = "gene",
+               values_to = "expression_mean") |>
+  mutate(gene = str_sub(gene, start = 1, end = -6)) |>
+  filter(cancer == 'ALL') |>
+  arrange(desc(expression_mean)) |>
+  slice(1:10)
 
 
-cancer_data_long |> filter(cancer_type_number == 1) |> arrange(desc(expression)) |> slice(1:25)
-cancer_data_long |> filter(cancer_type_number == 0) |> arrange(desc(expression)) |> slice(1:25)
+significant_ALL <- cancer_data |>
+  filter(cancer == 'ALL') |>
+  select(top_all_means_long$gene)
+
+significant_ALL_long <- significant_ALL |>
+  mutate(id = row_number()) |>
+  pivot_longer(col = -"id",
+               names_to = "gene",
+               values_to = "expression")
 
 
-heatmap <- cancer_data_long |> 
-  ggplot(aes(x=gene, y=cancer, fill=expression)) +
-  geom_tile() +
-  scale_fill_gradient2(low = "#075AFF",
-                       mid = "#FFFFCC",
-                       high = "#FF0000",
-                       midpoint = 50000) +
-  theme(axis.text.x = element_text(angle=45, hjust = 1, size = 5),
-          axis.text.y = element_text(size = 5),
-          legend.position = "bottom")
-# 
-heatmap
 
+ggplot(data = significant_ALL_long, aes(x = gene, y = expression)) + 
+  geom_violin(fill = "lightgreen", color = "green") +
+  theme_bw() +  
+  theme(legend.key = element_blank()) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.title = element_blank()) +
+  labs(title = "Most significt genes of ALL group", x = "Gene name", y = "Relative expression")
 ```
 
+### AML
+
+```{r}
+top_aml_means_long <- cancer_mean |>
+  pivot_longer(cols = -cancer,
+               names_to = "gene",
+               values_to = "expression_mean") |>
+  mutate(gene = str_sub(gene, start = 1, end = -6)) |>
+  filter(cancer == 'AML') |>
+  arrange(desc(expression_mean)) |>
+  slice(1:10)
+
+significant_AML <- cancer_data |>
+  filter(cancer == 'AML') |>
+  select(top_aml_means_long$gene)
+
+significant_AML_long <- significant_AML |>
+  mutate(id = row_number()) |>
+  pivot_longer(col = -"id",
+               names_to = "gene",
+               values_to = "expression")
+
+
+
+ggplot(data = significant_AML_long, aes(x = gene, y = expression)) + 
+  geom_violin(fill = "lightblue", color = "blue") +
+  theme_bw() +  
+  theme(legend.key = element_blank()) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.title = element_blank()) +
+  labs(title = "Most significt genes of AML group", x = "Gene name", y = "Relative expression")
+
+```
