@@ -20,6 +20,7 @@ library(tidyverse)
 
 ```{r}
 patient_data <- read_csv("../data/01_patient_data.csv")
+
 expression_clean <- read_csv("../data/02_expression_clean.csv")
 
 # adding numeric values for the cancer types 
@@ -54,7 +55,6 @@ write.csv(expression_tidy,
           row.names = FALSE
           )
 
-<<<<<<< HEAD
 # removing objects to free memory
 remove(expression_clean, patient_data)
 ```
@@ -63,36 +63,8 @@ remove(expression_clean, patient_data)
 
 ```{r}
 # a function for standardizing gene expression values
-scale_this <- function(x){
-  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
-}
-
-expression_scaled <- expression_tidy |>
-  mutate(across(c(-1, -2, -3),
-                ~as.numeric(scale_this(.))
-                )
-         )
-
-# writing to csv
-write.csv(expression_tidy,
-          "../data/03_expression_scaled.csv",
-          row.names = FALSE)
-
-# freeing memory
-remove(expression_tidy)
-
-# DO WE NEED TO WRITE BOTH '03_expression_tidy.csv' AND
-#                          '03_expression_scaled.csv' ???
-```
-=======
-write.csv(transformed_data_with_cancer, "../data/03_dat_aug_1.csv", row.names = FALSE)
-#free memory by removing unnecessary objects
-remove(transformed_data, id_and_cancer_type)
-
-
-#scale data
-transformed_data_with_cancer_scaled <- transformed_data_with_cancer |> 
-  pivot_longer(cols = -c(ID, cancer, cancer_type_number), names_to = "gene", values_to = "expr") |>
+expression_tidy_scaled <- expression_tidy |> 
+  pivot_longer(cols = -c(patient_id, cancer, cancer_type_number), names_to = "gene", values_to = "expr") |>
   group_by(gene) |>
   nest() |>
   mutate(data = map(.x = data, .f = ~ mutate(.x, expr = as.numeric(scale(expr))))) |>
@@ -100,13 +72,11 @@ transformed_data_with_cancer_scaled <- transformed_data_with_cancer |>
   ungroup() |>
   pivot_wider(names_from = gene, values_from = expr)
 
-#write to csv
-write.csv(transformed_data_with_cancer_scaled, "../data/03_dat_aug_2.csv", row.names = FALSE)
+# writing to csv
+write.csv(expression_tidy_scaled,
+          "../data/03_expression_scaled.csv",
+          row.names = FALSE)
 
-#free memory
-remove(transformed_data_with_cancer_scaled)
-remove(transformed_data_with_cancer)
+# freeing memory
+remove(expression_tidy)
 ```
-
-
->>>>>>> aeb1c44f33e60aaf3561f87f419d8e1bbb9251b2
