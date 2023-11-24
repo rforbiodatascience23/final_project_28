@@ -13,14 +13,12 @@ library("factoextra")
 cancer_data <- read_csv("../data/03_dat_aug.csv")
 ```
 
-
 ```{r}
 # Group by 'cancer' and compute summary statistics
 summary_stats <- cancer_data |>
   group_by(cancer) |>
   summarise_all(list(mean = mean, sd = sd, median = median))
 ```
-
 
 ```{r}
 ggplot(cancer_data, aes(x = factor(cancer_type_number))) +
@@ -35,8 +33,6 @@ ggplot(cancer_data, aes(x = cancer, y = D49824_s_at)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  
 ```
-
-
 
 ```{r}
 numeric_cols <- cancer_data |>
@@ -54,6 +50,3 @@ cancer_data |>
        color = "Cancer Type") +
   theme_minimal()
 ```
-
-
-```{r}
