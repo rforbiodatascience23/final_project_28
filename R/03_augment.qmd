@@ -54,6 +54,7 @@ write.csv(expression_tidy,
           row.names = FALSE
           )
 
+<<<<<<< HEAD
 # removing objects to free memory
 remove(expression_clean, patient_data)
 ```
@@ -83,3 +84,29 @@ remove(expression_tidy)
 # DO WE NEED TO WRITE BOTH '03_expression_tidy.csv' AND
 #                          '03_expression_scaled.csv' ???
 ```
+=======
+write.csv(transformed_data_with_cancer, "../data/03_dat_aug_1.csv", row.names = FALSE)
+#free memory by removing unnecessary objects
+remove(transformed_data, id_and_cancer_type)
+
+
+#scale data
+transformed_data_with_cancer_scaled <- transformed_data_with_cancer |> 
+  pivot_longer(cols = -c(ID, cancer, cancer_type_number), names_to = "gene", values_to = "expr") |>
+  group_by(gene) |>
+  nest() |>
+  mutate(data = map(.x = data, .f = ~ mutate(.x, expr = as.numeric(scale(expr))))) |>
+  unnest(cols = c(data)) |>
+  ungroup() |>
+  pivot_wider(names_from = gene, values_from = expr)
+
+#write to csv
+write.csv(transformed_data_with_cancer_scaled, "../data/03_dat_aug_2.csv", row.names = FALSE)
+
+#free memory
+remove(transformed_data_with_cancer_scaled)
+remove(transformed_data_with_cancer)
+```
+
+
+>>>>>>> aeb1c44f33e60aaf3561f87f419d8e1bbb9251b2

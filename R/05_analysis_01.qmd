@@ -3,10 +3,11 @@ library("tidyverse")
 library("patchwork")
 library("broom")
 library("purrr")
+
 ```
 
 ```{r}
-cancer_data <- read_csv("../data/03_dat_aug.csv")
+cancer_data <- read_csv("../data/03_dat_aug_1.csv")
 cancer_data |> select(3:14) |>
   pivot_longer(cols = -cancer_type_number,
                names_to = "gene",
@@ -14,63 +15,47 @@ cancer_data |> select(3:14) |>
   ggplot(aes(x = gene, y = expr)) + geom_boxplot()
 ```
 
-<!-- ```{r} -->
 
-<!-- my_first_model <- cancer_data |> -->
-<!--   lm(formula = X90857_at ~ cancer_type_number, -->
-<!--      data = _) -->
-
-<!-- my_first_model -->
-
-<!-- ``` -->
 ```{r}
-scale_this <- function(x){
-  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
-}
 
-cancer_data_rescaled <- cancer_data |>
-  mutate(across(c(-1,-2,-3), ~ as.numeric(scale(.))))
-
+cancer_data_rescaled <- read_csv("../data/03_dat_aug_2.csv")
 cancer_data_rescaled |> select(3:14) |>
   pivot_longer(cols = -cancer_type_number,
                names_to = "gene",
                values_to = "expr") |>
   ggplot(aes(x = gene, y = expr)) + geom_boxplot()
 
-remove(cancer_data)
+
 ```
 
 ```{r}
 cancer_data_long <- cancer_data_rescaled |>
-  select(!cancer) |>
+  select(!c(cancer, ID)) |> 
   pivot_longer(cols = -cancer_type_number,
                names_to = "gene",
-               values_to = "expr")
-
+               values_to = "expr") 
 
 ```
 
 ```{r}
+#
 cancer_data_long_nested <- cancer_data_long |>
   group_by(gene) |>
   nest() |>
-  ungroup()
-
-
-```
-
-```{r}
-cancer_data_long_nested <- cancer_data_long_nested |>
-  group_by(gene) |>
   mutate(model_object = map(.x = data,
       .f = ~lm(formula = expr ~ cancer_type_number,
       data = .x)))
 
+
+
 ```
 
+
+
 ```{r}
+#
 cancer_data_long_nested <- cancer_data_long_nested |>
-  mutate(model_object_tidy = map(.x = model_object, 
+  mutate(model_object_tidy = map(.x = model_object,
                                  .f = ~tidy(x = .x,
                                             conf.int = TRUE,
                                             conf.level = 0.95)))
@@ -78,9 +63,9 @@ cancer_data_long_nested <- cancer_data_long_nested |>
 ```
 
 ```{r}
+#
 cancer_data_estimates <- cancer_data_long_nested |>
   unnest(model_object_tidy)
-
 remove(cancer_data_long_nested)
 ```
 
@@ -90,6 +75,8 @@ cancer_data_estimates <- cancer_data_estimates |>
   filter(term == "cancer_type_number") |>
   select(gene, p.value, estimate, conf.low, conf.high) |>
   ungroup()
+
+
 ```
 
 ```{r}
@@ -121,31 +108,53 @@ forest_plot
 ```
 
 ```{r}
-#get list of significants
-sig_list <- cancer_data_estimates |>
-  filter(is_significant == "yes") |>
-  select(gene) |>
-  pull() |>
-  as.character()
 
+heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
+  if (isTRUE(top)) {
+    sig_list <- estimates_df |>
+      filter(is_significant == "yes") |>
+      slice_max(estimate, n = 25) |>
+      select(gene) |>
+      pull() |>
+      as.character()
+  } else {
+    sig_list <- estimates_df |>
+      filter(is_significant == "yes") |>
+      slice_min(estimate, n = 25) |>
+      select(gene) |>
+      pull() |>
+      as.character()
+  }
+  
+  
+  cancer_data_rescaled_sig <- tidy_data_df |> 
+    select(ID, cancer, all_of(sig_list)) |>
+    arrange(cancer)
+  cancer_data_rescaled_sig$ID <- factor(cancer_data_rescaled_sig$ID, 
+                                          levels = cancer_data_rescaled_sig$ID)
+    
+    
+  heatmap <- cancer_data_rescaled_sig |>
+    pivot_longer(cols = -c(ID, cancer), names_to = "gene", values_to = "expr") |>
+    ggplot(aes(x = gene, y = ID)) +
+    geom_tile(aes(fill=expr)) +
+    scale_fill_viridis_c() +
+    theme(axis.text.x = element_text(angle=45, hjust = 1, size = 5),
+          axis.text.y = element_blank(),
+          axis.ticks.y = element_blank(),
+          legend.position = "bottom") +
+    facet_grid(vars(cancer), space = "free_y", scales = "free_y")
+  
+  return(heatmap)
+}
 
-# filter data to only get significant rescales
-cancer_data_rescaled_sig <- cancer_data_rescaled |> select(ID, cancer, cancer_type_number, all_of(sig_list))
+heatmap <- heatmap_from_data(cancer_data_estimates, cancer_data_rescaled, TRUE)
+heatmap2 <- heatmap_from_data(cancer_data_estimates, cancer_data_rescaled, FALSE)
+combined_heatmap <- heatmap + heatmap2
 
-heatmap <- cancer_data_rescaled_sig |>
-  pivot_longer(cols = -c(ID, cancer), names_to = "gene", values_to = "expr") |> 
-  ggplot(aes(x=gene, y=ID, fill=expr)) +
-  geom_tile() +
-  scale_fill_gradient2(low = "#075AFF",
-                       mid = "white",
-                       high = "#FF0000") +
-  theme(axis.text.x = element_text(angle=45, hjust = 1, size = 5),
-          axis.text.y = element_text(size = 5),
-          legend.position = "bottom")
-heatmap 
-
-
+ggsave(filename = "05_key_plot_1.png", plot = heatmap, device = "png", path = "../results")
+ggsave(filename = "05_key_plot_2.png", plot = heatmap2, device = "png", path = "../results")
+ggsave(filename = "05_key_plot_3.png", plot = combined_heatmap, device = "png", path = "../results")
 
 
 ```
-

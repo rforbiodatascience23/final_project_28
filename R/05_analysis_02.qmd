@@ -41,9 +41,7 @@ numeric_cols <- cancer_data |>
 pca_result <- PCA(numeric_cols, graph = FALSE)
 
 cancer_data |>
-  bind_cols(as_tibble(pca_result$ind$coord) |>
-              rename(PC1 = Dim.1, PC2 = Dim.2)) |>
-  ggplot(aes(x = PC1, y = PC2, color = cancer)) +
+  ggplot(aes(x = pca_result$ind$coord[, "Dim.1"], y = pca_result$ind$coord[, "Dim.2"], color = cancer)) +
   geom_point() +
   labs(title = "PCA of Gene Expression by Cancer Type", 
        x = "Principal Component 1", y = "Principal Component 2",
