@@ -1,14 +1,26 @@
-# Description
+---
+title: "04. Describing expression data"
+execute: 
+  echo: false
+  eval: true
+format: html
+editor: 
+  markdown: 
+    wrap: 80
+---
 
-## Load libraries
+## Loading libraries
 
 ```{r}
-#| echo: false
+#| eval: false
 library(tidyverse)
+```
+```{r}
+#| eval: true
 library(dplyr)
 ```
 
-## Load data
+## Loading data
 
 ```{r}
 cancer_data_aug <- read_csv("../data/03_dat_aug.csv")
@@ -46,8 +58,6 @@ significant_ALL_long <- significant_ALL |>
                names_to = "gene",
                values_to = "expression")
 
-
-
 ggplot(data = significant_ALL_long, aes(x = gene, y = expression)) + 
   geom_violin(fill = "lightgreen", color = "green") +
   theme_bw() +  
@@ -79,8 +89,6 @@ significant_AML_long <- significant_AML |>
                names_to = "gene",
                values_to = "expression")
 
-
-
 ggplot(data = significant_AML_long, aes(x = gene, y = expression)) + 
   geom_violin(fill = "lightblue", color = "blue") +
   theme_bw() +  
@@ -88,5 +96,4 @@ ggplot(data = significant_AML_long, aes(x = gene, y = expression)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   theme(legend.title = element_blank()) +
   labs(title = "Most significt genes of AML group", x = "Gene name", y = "Relative expression")
-
 ```

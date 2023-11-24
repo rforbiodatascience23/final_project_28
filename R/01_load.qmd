@@ -1,22 +1,80 @@
-# Load and clean data
+---
+title: "01. Loading and merging data sets"
+execute: 
+  echo: false
+  eval: true
+format: html
+editor: 
+  markdown: 
+    wrap: 80
+---
 
-## Libraries
+## Loading libraries
+
 ```{r}
 library(tidyverse)
 ```
 
+## Source of data
+
+The data set used in this project was originally published by [Gloub *et al.*
+(1999)](https://www-science-org.proxy.findit.cvt.dk/doi/10.1126/science.286.5439.531#body-ref-RF14)
+and was downloaded from
+<https://www.kaggle.com/datasets/crawford/gene-expression/>.
+
+## Brief data description
+
+There are 3 files of interest in `../data/`:
+
+1.  `actual.csv`,
+
+2.  `data_set_ALL_AML_independent.csv`, and
+
+3.  `data_set_ALL_AML_train.csv`.
+
+The first one contains (numeric) patient IDs in column 'patient' and cancer type
+(ALL for acute lymphoblastic leukemia, AML for acute myeloid leukemia) in column
+'cancer'. The remaining two contain gene expression data per gene in row, while
+the columns hold information on each gene's description, its accession number,
+patient ID and something denoted gene "call". The latter refers to whether the
+authors of the paper deemed the gene present (P), marginal (M), or absent (A) in
+the sample from each patient.
+
+## Loading data
 
 ```{r}
-#load the data
-id_and_cancer_type <- read_csv("../_raw/actual.csv")
-raw_data <- read_csv("../_raw/data_set_ALL_AML_independent.csv")
-raw_data_2 <- read_csv("../_raw/data_set_ALL_AML_train.csv")
+# reading each of the 3 data files
+patient_data <- read_csv("../_raw/actual.csv")
+expression_indep <- read_csv("../_raw/data_set_ALL_AML_independent.csv")
+expression_train <- read_csv("../_raw/data_set_ALL_AML_train.csv")
 
-#merge the two data frames (we will not be doing model training)
-raw_data_merged <- merge(x = raw_data, y = raw_data_2, by.x = c("Gene Description", "Gene Accession Number"),  by.y = c("Gene Description", "Gene Accession Number"))
+# combining the 2 tibbles with gene expression data
+expression <- merge(x = expression_indep,
+                    y = expression_train,
+                    by.x = c("Gene Description",
+                             "Gene Accession Number"),
+                    by.y = c("Gene Description",
+                             "Gene Accession Number")
+                    )
+```
 
-#remove objects to free memory
-write.csv(raw_data_merged, "../data/01_dat_load_1.csv", row.names = FALSE)
-write.csv(id_and_cancer_type, "../data/01_dat_load_2.csv", row.names = FALSE)
-remove(raw_data, raw_data_2, raw_data_merged, id_and_cancer_type)
+## Writing combined data
+
+```{r}
+write.csv(expression,
+          "../data/01_expression_data.csv",
+          row.names = FALSE
+          )
+
+write.csv(patient_data,
+          "../data/01_patient_data.csv",
+          row.names = FALSE
+          )
+ 
+# removing objects to free memory
+remove(expression_indep,
+       expression_train,
+       expression,
+       patient_data
+       )
 ```
