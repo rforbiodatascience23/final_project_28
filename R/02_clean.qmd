@@ -1,0 +1,71 @@
+---
+title: "02. Cleaning expression data"
+execute: 
+  echo: false
+  eval: true
+format: html
+editor: 
+  markdown: 
+    wrap: 80
+---
+
+## Loading libraries
+
+```{r}
+#| eval: false
+#
+library(tidyverse)
+```
+
+## Loading and cleaning data
+
+```{r}
+expression_data <- read_csv("../data/01_expression_data.csv")
+
+# removing gene "call" columns
+expression_data <- expression_data |>
+  select(-matches("^call\\.\\.\\.\\d+")
+         )
+# cleaning column names
+expression_data <- expression_data |>
+  rename(gene_description = "Gene Description",
+         gene_accession_number = "Gene Accession Number"
+         )
+```
+
+## Transforming data
+
+```{r}
+# saving gene information
+gene_info <- expression_data |> 
+  select(gene_description, gene_accession_number)
+
+# pivoting expression data 
+expression_clean <- expression_data |>
+  select(-gene_description) |> 
+  pivot_longer(cols = -gene_accession_number,
+               names_to = "patient_id",
+               values_to = "expression"
+               ) |> 
+  pivot_wider(names_from = gene_accession_number,
+              values_from = expression
+              )
+```
+
+## Writing clean data
+
+```{r}
+write.csv(gene_info,
+          "../data/02_gene_info.csv",
+          row.names = FALSE
+          )
+
+write.csv(expression_clean,
+          "../data/02_expression_clean.csv",
+          row.names = FALSE
+          )
+
+# removing objects to free memory
+remove(expression_data)
+remove(expression_clean)
+```
