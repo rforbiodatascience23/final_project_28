@@ -52,3 +52,38 @@ heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
 }
 ```
 
+## Function to find n most/least expressed genes
+
+```{r}
+find_most_expressed <- function(data,
+                                n,
+                                reverse = FALSE) {
+  # 'highest' expression based on mean per gene
+  data_means <- data |> 
+    group_by(gene_accession_number) |> 
+    summarise(mean = mean(expression))
+  
+  # reversing sorting order for 'lowest' expression
+  if (reverse == TRUE) {
+    data_means <- data_means |>
+      arrange(mean,
+              .by_group = TRUE)
+  } else {
+    data_means <- data_means |> 
+      arrange(desc(mean),
+              .by_group = TRUE)
+  }
+  
+  # selecting n from the top
+  gene_list <- data_means |> 
+    slice(1:n) |> 
+    select(gene_accession_number) |>
+    # later selection with %in% requires a vector
+    pull()
+  
+  data |> 
+    filter(gene_accession_number %in% gene_list) |> 
+    group_by(gene_description)
+}
+```
+
