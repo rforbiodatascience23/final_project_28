@@ -1,0 +1,56 @@
+---
+title: "Project title"
+author: "Group 28"
+format: 
+  revealjs:
+    theme: blood
+    slide-number: true
+    show-slide-number: all
+---
+
+### Introduction
+- sample text
+- sample text
+
+---
+
+### Materials and Methods
+- sample text
+- sample text
+
+---
+
+### Results - Theoretical plot
+- sample text
+
+---
+
+### Results - Differential expression heatmap {.smaller}
+::: columns
+::: {.column width="30%"}
+::: {.r-fit-text}
+- Linear modelling applied to find change in expression between ALL (0) and AML (1)
+- Using q-value < 0.05, significantly differentially expressed genes were filtered
+- 50 gene names were filtered based on highest and lowest estimated expression change  
+- Heatmap shows normalized expression differences
+:::
+:::
+
+::: {.column width="70%"}
+::: {.r-stack}
+![](../results/05_heatmap_1.png){.fragment .fade-out}
+
+![](../results/05_heatmap_2.png){.fragment}
+:::
+:::
+:::
+
+---
+
+### Discussion
+
+::: {.r-stack}
+![](../results/05_heatmap_1.png){.fragment}
+
+![](../results/05_heatmap_2.png){.fragment}
+:::
