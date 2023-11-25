@@ -9,6 +9,8 @@ editor:
     wrap: 80
 ---
 
+# =============================> KT code START <================================
+
 ## Loading libraries
 
 ```{r}
@@ -20,35 +22,167 @@ library(tidyverse)
 library(dplyr)
 ```
 
+## Loading and cleaning data // FIX: REUSING CODE FROM 02
+
+```{r}
+expression_data <- read_csv("../data/01_expression_data.csv")
+patient_data    <- read_csv("../data/01_patient_data.csv")
+
+# removing gene "call" columns
+expression_data <- expression_data |>
+  select(-matches("^call\\.\\.\\.\\d+")
+         )
+
+# cleaning column names
+expression_data <- expression_data |>
+  rename(gene_description = "Gene Description",
+         gene_accession_number = "Gene Accession Number"
+         )
+
+#expression_data_5 <- expression_data |> 
+#  sample_n(5) |> 
+#  view()
+```
+
+## Transforming data
+
+```{r}
+# pivoting to put patient ID, gene, cancer, expression in columns
+expression_long <- expression_data |> 
+  pivot_longer(cols = -c(gene_description,
+                         gene_accession_number),
+               names_to  = "patient_id",
+               values_to = "expression")
+```
+
+```{r}
+# merging expression data with patient data based on patient ID
+expression_long_with_cancer <- merge(x = expression_long,
+                                     y = patient_data,
+                                     by.x = "patient_id",
+                                     by.y = "patient")
+```
+
+```{r}
+# trying to make a tibble that contains all expression values of 10 genes with
+# highest mean expression for each cancer
+top_genes_list <- expression_long_with_cancer |> 
+  group_by(cancer,
+           gene_accession_number) |> 
+  summarise(mean = mean(expression)) |> 
+  arrange(desc(mean),
+          .by_group = TRUE) |> 
+  slice(1:10) |> 
+  select(gene_accession_number) |> 
+  ungroup() |> 
+  distinct(gene_accession_number) |> 
+  pull()
+
+#view(top_genes_list)
+```
+
+```{r}
+# selecting expression values based on top 10 genes from above
+top_genes_per_cancer_values <- expression_long_with_cancer |> 
+  filter(gene_accession_number %in% top_genes_list) |> 
+  group_by(cancer, gene_accession_number)
+
+#view(top_genes_per_cancer_values)
+```
+
+```{r}
+# trying to plot distributions
+top_genes_plot <- top_genes_per_cancer_values |> 
+  ggplot(
+    mapping = aes(x = gene_accession_number,
+                  y = expression,
+                  colour = cancer)
+    ) +
+  geom_violin()
+
+top_genes_plot
+```
+# ==============================> KT code END <=================================
+
 ## Loading data
 
 ```{r}
-cancer_data_aug <- read_csv("../data/03_dat_aug.csv")
-cancer_data <- read_csv("../data/03_dat_tidy.csv")
+expression_scaled <- read_csv("../data/03_expression_scaled.csv")
+expression_tidy <- read_csv("../data/03_expression_tidy.csv")
 
-cancer_mean <- cancer_data |>
+expression_tidy |> 
+  sample_n(5) |> 
+  view()
+
+expression_means <- expression_tidy |>
   group_by(cancer) |>
-  summarize(across(c(-ID,-cancer_type_number),
-                   list(mean=mean),
-                        na.rm=TRUE))
+  summarize(across(c(-patient_id, -cancer_type_number),
+                   list(mean = mean),
+                   na.rm = TRUE
+                   )
+            )
 ```
 
-## Significant genes
+```{r}
+# pivoting to put each gene in its own row
+expression_means_long <- expression_means |> 
+  pivot_longer(cols = -cancer,
+               names_to = "gene_accession_number",
+               values_to = "mean")
+
+expression_means_long
+```
+
+```{r}
+# finding top 10 highly expressed genes in ALL patients
+top_10_genes_ALL <- expression_means_long |> 
+  filter(cancer == "ALL") |> 
+  arrange(desc(mean)) |> 
+  slice_head(n = 10) |> 
+  select(-mean) |> 
+  mutate(rank = c(1:10),
+         .before = cancer)
+
+top_10_genes_ALL
+```
+
+```{r}
+# finding top 10 highly expressed genes in AML patients
+top_10_genes_AML <- expression_means_long |> 
+  filter(cancer == "AML") |> 
+  arrange(desc(mean)) |> 
+  slice_head(n = 10) |> 
+  select(-mean) |> 
+  mutate(rank = c(1:10),
+         .before = cancer)
+
+top_10_genes_AML
+```
+
+```{r}
+# combining top 10s into one tibble
+top_10_genes_per_cancer <- bind_rows(top_10_genes_ALL,
+                                     top_10_genes_AML)
+top_10_genes_per_cancer
+```
+
+## Top 10 highly expressed genes
 
 ### ALL
 
 ```{r}
-top_all_means_long <- cancer_mean |>
+top_all_means_long <- expression_means |>
   pivot_longer(cols = -cancer,
                names_to = "gene",
                values_to = "expression_mean") |>
-  mutate(gene = str_sub(gene, start = 1, end = -6)) |>
+  mutate(gene = str_sub(gene,
+                        start = 1,
+                        end = -6)) |>
   filter(cancer == 'ALL') |>
   arrange(desc(expression_mean)) |>
   slice(1:10)
 
-
-significant_ALL <- cancer_data |>
+significant_ALL <- expression_tidy |>
   filter(cancer == 'ALL') |>
   select(top_all_means_long$gene)
 
@@ -70,7 +204,7 @@ ggplot(data = significant_ALL_long, aes(x = gene, y = expression)) +
 ### AML
 
 ```{r}
-top_aml_means_long <- cancer_mean |>
+top_aml_means_long <- expression_means |>
   pivot_longer(cols = -cancer,
                names_to = "gene",
                values_to = "expression_mean") |>
@@ -79,7 +213,7 @@ top_aml_means_long <- cancer_mean |>
   arrange(desc(expression_mean)) |>
   slice(1:10)
 
-significant_AML <- cancer_data |>
+significant_AML <- expression_tidy |>
   filter(cancer == 'AML') |>
   select(top_aml_means_long$gene)
 
