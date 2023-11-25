@@ -6,7 +6,18 @@ format:
     theme: blood
 ---
 
-## Heatmap {.smaller}
+## Introduction
+- sample text
+- sample text
+
+## Materials and Methods
+- sample text
+- sample text
+
+## Results - Theoretical plot
+- sample text
+
+## Results - Differential expression heatmap {.smaller}
 ::: columns
 ::: {.column width="40%"}
 - Linear modelling applied to find change in expression between ALL (0) and AML (1)
@@ -20,12 +31,8 @@ format:
 :::
 :::
 
-## Getting up
+## Discussion
 
 - Turn off alarm
 - Get out of bed
 
-## Going to sleep
-
-- Get in bed
-- Count sheep
