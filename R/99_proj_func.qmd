@@ -34,13 +34,18 @@ heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
     
   heatmap <- cancer_data_rescaled_sig |>
     pivot_longer(cols = -c(patient_id, cancer), names_to = "gene", values_to = "expr") |>
+    mutate(gene = str_extract(gene, "[A-Z, 0-9]+")) |>
     ggplot(aes(x = gene, y = patient_id)) +
     geom_tile(aes(fill=expr)) +
     scale_fill_viridis_c() +
-    theme(axis.text.x = element_text(angle=45, hjust = 1, size = 5),
+    labs(title = "Differential expression heatmap between AML and ALL",
+         x = "Gene ID",
+         y = element_blank()) +
+    theme(axis.text.x = element_text(angle=45, hjust = 1, size = 8),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
-          legend.position = "bottom") +
+          legend.position = "bottom",
+          plot.title = element_text(hjust = 0.5)) +
     facet_grid(vars(cancer), space = "free_y", scales = "free_y")
   
   return(heatmap)

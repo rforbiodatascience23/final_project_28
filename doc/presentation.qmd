@@ -27,7 +27,7 @@ format:
 
 ### Results - Differential expression heatmap {.smaller}
 ::: columns
-::: {.column width="40%"}
+::: {.column width="30%"}
 ::: {.r-fit-text}
 - Linear modelling applied to find change in expression between ALL (0) and AML (1)
 - Using q-value < 0.05, significantly differentially expressed genes were filtered
@@ -36,8 +36,12 @@ format:
 :::
 :::
 
-::: {.column width="60%"}
-![](../results/05_combined_heatmap.png){.fragment height="75%" width="75%"}
+::: {.column width="70%"}
+::: {.r-stack}
+![](../results/05_heatmap_1.png){.fragment .fade-out}
+
+![](../results/05_heatmap_2.png){.fragment}
+:::
 :::
 :::
 
@@ -45,6 +49,8 @@ format:
 
 ### Discussion
 
-- Turn off alarm
-- Get out of bed
+::: {.r-stack}
+![](../results/05_heatmap_1.png){.fragment}
 
+![](../results/05_heatmap_2.png){.fragment}
+:::
