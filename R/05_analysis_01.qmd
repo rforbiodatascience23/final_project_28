@@ -36,6 +36,7 @@ cancer_data_long <- cancer_data_rescaled |>
                names_to = "gene",
                values_to = "expr") 
 
+
 ```
 
 ```{r}
@@ -118,7 +119,9 @@ forest_plot
 heatmap <- heatmap_from_data(cancer_data_estimates, cancer_data_rescaled, TRUE)
 heatmap2 <- heatmap_from_data(cancer_data_estimates, cancer_data_rescaled, FALSE)
 combined_heatmap <- heatmap + heatmap2
-
+combined_heatmap
+ggsave(filename = "05_heatmap_1.png", plot = heatmap, device = "png", path = "../results")
+ggsave(filename = "05_heatmap_2.png", plot = heatmap2, device = "png", path = "../results")
 ggsave(filename = "05_combined_heatmap.png", plot = combined_heatmap, device = "png", path = "../results")
 
 
