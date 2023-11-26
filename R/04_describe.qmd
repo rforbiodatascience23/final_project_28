@@ -78,6 +78,28 @@ expression_long_with_cancer <- merge(x = expression_long,
                                      by.y = "patient")
 ```
 
+## Exploratory data analysis
+
+### Distributions of mean expressions
+
+```{r}
+expression_means <- expression_long_with_cancer |> 
+  group_by(cancer, gene_description) |> 
+  summarise(mean = mean(expression))
+
+mean_expression_hist <- expression_means |> 
+  ggplot(
+    aes(x = mean,
+        fill = cancer)
+  ) +
+  geom_histogram(binwidth = 500) +
+  facet_wrap(~cancer,
+             nrow = 2)
+
+mean_expression_hist
+```
+
+
 ## Finding highest and lowest expressed genes
 
 ```{r}
