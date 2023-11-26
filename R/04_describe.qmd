@@ -86,16 +86,10 @@ expression_means <- expression_long_with_cancer |>
   group_by(cancer, gene_description) |> 
   summarise(mean = mean(expression))
 
-# Constructing custom labels
-cancer_labels <- list(
+# Constructing custom labels for a custom 'facet_labeller' function
+custom_labels <- list(
   "ALL" = "Acute lymphoid leukemia (ALL)",
   "AML" = "Acute myeloid leukemia (AML)")
-
-# Labeller function to pass to `facet_wrap`
-# TODO: change labeller so it is not deprecated
-cancer_labeller <- function(variable, value) {
-  return(cancer_labels[value])
-}
 
 mean_expression_hist <- expression_means |> 
   ggplot(
@@ -108,7 +102,7 @@ mean_expression_hist_general <- mean_expression_hist +
                  alpha = 0.7) +
   facet_wrap(~cancer,
              nrow = 2,
-             labeller = cancer_labeller)
+             labeller = facet_labeller)
 
 mean_expression_hist_general +
   labs(
@@ -135,7 +129,7 @@ mean_expression_hist_general +
   )
 ```
 
-### Zooming in on the MIDDLE
+### Zooming in on around the MODE
 
 ```{r}
 mean_expression_hist +
@@ -143,7 +137,7 @@ mean_expression_hist +
                  alpha = 0.7) +
   coord_cartesian(xlim = c(-1000, 3000)) +
   labs(
-    title = "Zooming in on means around median",
+    title = "Zooming in on means around mode",
     x = "Mean gene expression (a.u.)",
     y = "Count"
   ) +
@@ -166,7 +160,6 @@ mean_expression_hist +
     axis.text.x = element_text(size = 11)
   )
 ```
-
 
 ### Zooming in on NEGATIVE means
 
@@ -232,44 +225,9 @@ mean_expression_hist +
   )
 ```
 
-## Finding highest and lowest expressed genes
+## Finding highest and lowest expressed genes // TODO: put in a function
 
 ```{r}
-# Custom function --------------------------------------------------------------
-
-# TODO: remove from here and import from `99_proj_func.qmd` only
-find_most_expressed <- function(data,
-                                n,
-                                reverse = FALSE) {
-  # 'highest' expression based on mean per gene
-  data_means <- data |> 
-    group_by(gene_accession_number) |> 
-    summarise(mean = mean(expression))
-  
-  # reversing sorting order for 'lowest' expression
-  if (reverse == TRUE) {
-    data_means <- data_means |>
-      arrange(mean,
-              .by_group = TRUE)
-  } else {
-    data_means <- data_means |> 
-      arrange(desc(mean),
-              .by_group = TRUE)
-  }
-  
-  # selecting n from the top
-  gene_list <- data_means |> 
-    slice(1:n) |> 
-    select(gene_accession_number) |>
-    # later selection with %in% requires a vector
-    pull()
-  
-  data |> 
-    filter(gene_accession_number %in% gene_list) |> 
-    group_by(gene_description)
-}
-# ------------------------------------------------------------------------------
-
 # Find 10 MOST expressed genes
 highest_10_genes_ALL <- expression_long_with_cancer |> 
   filter(cancer == "ALL") |> 
@@ -290,7 +248,7 @@ lowest_10_genes_AML <- expression_long_with_cancer |>
                       reverse = TRUE)
 ```
 
-## Plotting distributions of 10 highest expressed genes
+## Plotting distributions of 10 highest expressed genes // TODO: put in a function
 
 ```{r}
 #| label: highest-ridges

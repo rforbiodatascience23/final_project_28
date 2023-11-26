@@ -24,13 +24,11 @@ heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
       as.character()
   }
   
-  
   cancer_data_rescaled_sig <- tidy_data_df |> 
     select(patient_id, cancer, all_of(sig_list)) |>
     arrange(cancer)
   cancer_data_rescaled_sig$patient_id <- factor(cancer_data_rescaled_sig$patient_id, 
                                           levels = cancer_data_rescaled_sig$patient_id)
-    
     
   heatmap <- cancer_data_rescaled_sig |>
     pivot_longer(cols = -c(patient_id, cancer), names_to = "gene", values_to = "expr") |>
@@ -47,8 +45,16 @@ heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
           legend.position = "bottom",
           plot.title = element_text(hjust = 0.5)) +
     facet_grid(vars(cancer), space = "free_y", scales = "free_y")
-  
-  return(heatmap)
+}
+```
+
+## Labeller function for facets
+
+```{r}
+# TODO: change labeller so it is not deprecated !!!
+
+facet_labeller <- function(variable, value) {
+  custom_labels[value]
 }
 ```
 
@@ -86,4 +92,3 @@ find_most_expressed <- function(data,
     group_by(gene_description)
 }
 ```
-
