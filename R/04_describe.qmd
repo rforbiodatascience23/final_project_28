@@ -92,6 +92,7 @@ cancer_labels <- list(
   "AML" = "Acute myeloid leukemia (AML)")
 
 # Labeller function to pass to `facet_wrap`
+# TODO: change labeller so it is not deprecated
 cancer_labeller <- function(variable, value) {
   return(cancer_labels[value])
 }
