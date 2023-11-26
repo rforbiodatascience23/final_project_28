@@ -101,19 +101,23 @@ mean_expression_hist <- expression_means |>
   ggplot(
     aes(x = mean,
         fill = cancer)
-  ) +
+  )
+
+mean_expression_hist_general <- mean_expression_hist +
   geom_histogram(binwidth = 500,
                  alpha = 0.7) +
   facet_wrap(~cancer,
              nrow = 2,
-             labeller = cancer_labeller) +
-  theme_minimal() +
-  scale_fill_viridis_d(guide = "none") +
+             labeller = cancer_labeller)
+
+mean_expression_hist_general +
   labs(
     title = "Distributions of mean gene expressions",
     x = "Mean gene expression (a.u.)",
     y = "Count"
   ) +
+  theme_minimal() +
+  scale_fill_viridis_d(guide = "none") +
   theme(
     plot.title = element_text(size = 12,
                               face = "bold"),
@@ -129,8 +133,70 @@ mean_expression_hist <- expression_means |>
                                 face = "bold"),
     axis.text.x = element_text(size = 11)
   )
+```
 
-mean_expression_hist
+### Zooming in on NEGATIVE means
+
+```{r}
+mean_expression_hist +
+  geom_histogram(binwidth = 250,
+                 alpha = 0.7) +
+  coord_cartesian(xlim = c(-3000, -1)) +
+  labs(
+    title = "Zooming in on negative means",
+    x = "Mean gene expression (a.u.)",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d(guide = "none") +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "panel",
+    strip.text = element_text(size = 11,
+                              face = "bold"),
+    axis.title.y = element_text(size = 11,
+                                face = "bold",
+                                angle = 0,
+                                vjust = 0.5),
+    axis.text.y = element_text(size = 11,
+                               colour = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+```
+
+## Zooming in on POSITIVE means
+
+```{r}
+mean_expression_hist +
+  geom_histogram(binwidth = 2000,
+                 alpha = 0.7) +
+  coord_cartesian(xlim = c(0, 30000)) +
+  labs(
+    title = "Zooming in on positive means",
+    x = "Mean gene expression (a.u.)",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d(guide = "none") +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "panel",
+    strip.text = element_text(size = 11,
+                              face = "bold"),
+    axis.title.y = element_text(size = 11,
+                                face = "bold",
+                                angle = 0,
+                                vjust = 0.5),
+    axis.text.y = element_text(size = 11,
+                               colour = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
 ```
 
 ## Finding highest and lowest expressed genes
