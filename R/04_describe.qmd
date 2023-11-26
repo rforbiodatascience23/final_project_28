@@ -135,6 +135,39 @@ mean_expression_hist_general +
   )
 ```
 
+### Zooming in on the MIDDLE
+
+```{r}
+mean_expression_hist +
+  geom_histogram(binwidth = 250,
+                 alpha = 0.7) +
+  coord_cartesian(xlim = c(-1000, 3000)) +
+  labs(
+    title = "Zooming in on means around median",
+    x = "Mean gene expression (a.u.)",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d(guide = "none") +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "panel",
+    strip.text = element_text(size = 11,
+                              face = "bold"),
+    axis.title.y = element_text(size = 11,
+                                face = "bold",
+                                angle = 0,
+                                vjust = 0.5),
+    axis.text.y = element_text(size = 11,
+                               colour = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+```
+
+
 ### Zooming in on NEGATIVE means
 
 ```{r}
