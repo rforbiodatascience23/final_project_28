@@ -9,8 +9,6 @@ editor:
     wrap: 80
 ---
 
-# =============================> KT code START <================================
-
 ## Loading libraries
 
 ```{r}
@@ -24,7 +22,7 @@ library(patchwork)
 library(ggridges)
 ```
 
-## Loading and cleaning data // FIX: REUSING CODE FROM 02
+## Loading and cleaning data
 
 ```{r}
 expression_data <- read_csv("../data/01_expression_data.csv")
@@ -39,7 +37,26 @@ expression_data <- expression_data |>
 expression_data <- expression_data |>
   rename(gene_description = "Gene Description",
          gene_accession_number = "Gene Accession Number"
-         )
+         ) |> 
+  relocate(gene_description,
+           .after = last_col()
+           )
+```
+
+
+## Basic data set information
+
+```{r}
+# Dimensions
+expression_data_dims <- expression_data |> 
+  dim() |> 
+  print() # rows x columns
+```
+
+```{r}
+# Preview of data sample
+expression_data |> 
+  sample_n(5)
 ```
 
 ## Transforming data
@@ -61,10 +78,12 @@ expression_long_with_cancer <- merge(x = expression_long,
                                      by.y = "patient")
 ```
 
-## Finding highest and lowest expressed genes // ACCEPTABLE
+## Finding highest and lowest expressed genes
 
 ```{r}
-# FUNCTION
+# Custom function --------------------------------------------------------------
+
+# TODO: remove from here and import from `99_proj_func.qmd` only
 find_most_expressed <- function(data,
                                 n,
                                 reverse = FALSE) {
@@ -95,8 +114,9 @@ find_most_expressed <- function(data,
     filter(gene_accession_number %in% gene_list) |> 
     group_by(gene_description)
 }
+# ------------------------------------------------------------------------------
 
-# Find HIGHEST 10
+# Find 10 MOST expressed genes
 highest_10_genes_ALL <- expression_long_with_cancer |> 
   filter(cancer == "ALL") |> 
   find_most_expressed(n = 10)
@@ -105,7 +125,7 @@ highest_10_genes_AML <- expression_long_with_cancer |>
   filter(cancer == "AML") |> 
   find_most_expressed(n = 10)
 
-# Find LOWEST 10
+# Find 10 LEAST expressed genes
 lowest_10_genes_ALL <- expression_long_with_cancer |> 
   find_most_expressed(n = 10,
                       reverse = TRUE)
@@ -116,7 +136,7 @@ lowest_10_genes_AML <- expression_long_with_cancer |>
                       reverse = TRUE)
 ```
 
-## Plotting distributions of 10 highest expressed genes // ACCEPTABLE
+## Plotting distributions of 10 highest expressed genes
 
 ```{r}
 #| label: highest-ridges
@@ -124,6 +144,7 @@ lowest_10_genes_AML <- expression_long_with_cancer |>
 #| fig-asp: 0.5
 #| out-width: "600"
 
+# Combining at this point makes for easier plotting
 highest_10_combined <- bind_rows(highest_10_genes_ALL,
                                  highest_10_genes_AML)
 
@@ -173,6 +194,7 @@ highest_10_plot
 #| fig-asp: 0.5
 #| out-width: "600"
 
+# Combining at this point makes for easier plotting
 lowest_10_combined <- bind_rows(lowest_10_genes_ALL,
                                 lowest_10_genes_AML)
 
@@ -212,78 +234,4 @@ lowest_10_plot <- lowest_10_combined |>
   )
 
 lowest_10_plot
-```
-
-## Combining plots with `patchwork` // ILLEGIBLE
-
-```{r}
-#| label: combined-ridges
-#| fig-width: 7
-#| fig-asp: 1.0
-#| out-width: "1200"
-
-highest_10_plot / lowest_10_plot
-```
-
-## Combining data to make one plot
-
-```{r}
-highest_10_combined_marked <- highest_10_combined |> 
-  mutate(extremum = "highest")
-
-lowest_10_combined_marked <- lowest_10_combined |> 
-  mutate(extremum = "lowest")
-
-highest_and_lowest <- bind_rows(highest_10_combined_marked,
-                                lowest_10_combined_marked)
-```
-
-## Combining plots with facets // ILLEGIBLE
-
-```{r}
-#| label: combined-ridges
-#| fig-width: 7
-#| fig-asp: 1.0
-#| out-width: "1200"
-
-highest_and_lowest_plot <- highest_and_lowest |> 
-  ggplot(
-    aes(x = expression,
-        y = gene_description,
-        fill = cancer)
-  ) +
-  geom_density_ridges(
-    alpha = 0.5,
-    scale = 1,
-    panel_scaling = FALSE
-  ) +
-  facet_wrap(~extremum,
-             nrow = 2,
-             scales = "free",
-             shrink = TRUE) +
-  scale_fill_viridis_d(name = "Cancer type") +
-  labs(
-    tag = "",
-    title = "Exploring high and low end of gene expression",
-    x = "Gene expression (a.u.)",
-    y = NULL
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 11,
-                              face = "bold"),
-    plot.title.position = "plot",
-    axis.text.y = element_text(size = 8,
-                               color = "black"),
-    axis.title.x = element_text(size = 10,
-                                face = "bold"),
-    axis.text.x = element_text(size = 10),
-    legend.title = element_text(size = 9,
-                                face = "bold"),
-    legend.text = element_text(size = 9),
-    legend.position = "top",
-    legend.justification = c(0, 0)
-  )
-
-highest_and_lowest_plot
 ```
