@@ -1,7 +1,7 @@
 ---
 title: "04. Describing expression data"
 execute: 
-  echo: false
+  echo: true
   eval: true
 format: html
 editor: 
@@ -12,11 +12,9 @@ editor:
 ## Loading libraries
 
 ```{r}
-#| eval: false
 library(tidyverse)
 ```
 ```{r}
-#| eval: true
 library(dplyr)
 library(patchwork)
 library(ggridges)
