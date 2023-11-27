@@ -1,6 +1,7 @@
 ---
 title: "R4BDS Final Project"
-author: "Group 28"
+subtitle: "Group 28"
+author: "Karolina, Jiawen, Martynas, Taner, Attila"
 format: 
   revealjs:
     theme: blood

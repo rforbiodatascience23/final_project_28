@@ -24,7 +24,7 @@ and was downloaded from
 
 ## Brief data description
 
-There are 3 files of interest in `../data/`:
+There are 3 files of interest in `../_raw/`:
 
 1.  `actual.csv`,
 
