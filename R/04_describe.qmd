@@ -76,6 +76,10 @@ expression_long_with_cancer <- merge(x = expression_long,
                                      y = patient_data,
                                      by.x = "patient_id",
                                      by.y = "patient")
+
+expression_long_with_cancer |> 
+  sample_n(5) |> 
+  view()
 ```
 
 ## Exploratory data analysis
