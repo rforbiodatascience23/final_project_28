@@ -74,7 +74,7 @@ In the project we used the *Gene expression dataset (Golub et al.)*
 library("tidyverse")
 set.seed(420)
 raw_data <- read.csv("../_raw/data_set_ALL_AML_train.csv")
-raw_data |> sample_n(5) |> select(2:8)
+raw_data |> sample_n(5) |> select(1:8)
 ```
 
 #### Raw data 2
@@ -90,16 +90,46 @@ raw_data2 |> sample_n(5)
 ```{r}
 set.seed(420)
 tidy_data <- read.csv("../data/03_expression_tidy.csv")
-tidy_data |> sample_n(5) |> select(1:7)
+tidy_data |> sample_n(5) |> select(1:8)
 ```
 :::
 
+<<<<<<< HEAD
 |                                                                                                        |
 |-----|
 | \### Results - Data overview ::: columns ::: {.column width="30%"}                                     |
 | :::                                                                                                    |
 | ::: {.column width="70%"} ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"} |
 | ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"} ::: :::                   |
+=======
+
+---
+
+### Results - Data overview  {.smaller}
+
+::: columns
+
+::: {.column width="45%"}
+-   47 ALL vs 25 AML 
+-   Most gene expression distributed from -500 to 1000
+-   Distribution appears to follow normal distribution
+
+:::
+
+::: {.column}
+::: r-stack
+![](../results/04_patients_per_cancer.png){.fragment .fade-in-then-out height="600"}
+
+![](../results/04_mean_expression_hist_general.png){.fragment .fade-in-then-out height="600"}
+
+![](../results/04_mean_expression_hist_zoom.png){.fragment .fade-in-then-out height="600"}
+:::
+:::
+
+:::
+
+------------------------------------------------------------------------
+>>>>>>> 3750b0c13e91e5deccd650aefd8a96e2031810a8
 
 #### Results - Differential expression heatmap {.smaller}
 

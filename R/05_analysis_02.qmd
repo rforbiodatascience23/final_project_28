@@ -41,9 +41,11 @@ pca_plot <- pca_data |>
   ggplot(
     aes(x = .fittedPC1,
         y = .fittedPC2,
-        color = cancer)
+        color = cancer,
+        size = .fittedPC3))
     ) + 
-  geom_point(size = 2) +
+  geom_point(alpha = 0.5) +
+  scale_size(range = c(1, 8)) +
   scale_color_manual(values = c("ALL" = "#5855da",
                                 "AML" = "#ff6500")) +
   labs(
