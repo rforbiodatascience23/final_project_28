@@ -92,15 +92,13 @@ n_patients <- patient_data |>
              fill = cancer)) +
   geom_bar(alpha = 0.7) +
   scale_fill_viridis_d() +
-  theme_minimal() +
+  theme_light() +
+  theme(plot.title = element_text(hjust = 0.5))
   labs(
     title = "Sample sizes per cancer type",
     x = "Cancer type",
     y = "Count"
-    ) +
-  theme(
-    plot.title = element_text(hjust = 0.5)
-  )
+    )
 
 ggsave(filename = "04_patients_per_cancer.png",
        plot = n_patients,
@@ -141,6 +139,7 @@ mean_expression_hist_general <- mean_expression_hist_general +
     x = "Mean gene expression (a.u.)",
     y = "Count"
   ) +
+  theme_light() +
   scale_fill_viridis_d(guide = "none") +
   theme(
     plot.title = element_text(size = 12,
@@ -178,8 +177,8 @@ mean_expression_hist_zoom <- mean_expression_hist +
     x = "Mean gene expression (a.u.)",
     y = "Count"
   ) +
-  theme_minimal() +
-  scale_fill_viridis_d(guide = "none") +
+  theme_light() +
+  scale_fill_viridis_d() +
   theme(
     plot.title = element_text(size = 12,
                               face = "bold"),
@@ -196,6 +195,7 @@ mean_expression_hist_zoom <- mean_expression_hist +
                                 face = "bold"),
     axis.text.x = element_text(size = 11)
   )
+  
 
 ggsave(filename = "04_mean_expression_hist_zoom.png",
        plot = mean_expression_hist_zoom,

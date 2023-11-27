@@ -31,7 +31,18 @@ boxplot_unscaled <- cancer_data |>
                values_to = "expr") |>
   ggplot(aes(x = gene,
              y = expr)) +
-  geom_boxplot()
+  geom_boxplot() +
+  theme_light() +
+  labs(
+    x = "Gene ID",
+    y = "Expression",
+    title = "Expression distribution"
+  )
+
+ggsave(filename = "05_expressions_boxplot.png",
+       plot = boxplot_unscaled,
+       device = "png",
+       path = "../results")
 
 boxplot_unscaled
 ```
@@ -49,7 +60,18 @@ boxplot_scaled <- cancer_data_scaled |>
                values_to = "expr") |>
   ggplot(aes(x = gene,
              y = expr)) +
-  geom_boxplot()
+  geom_boxplot() +
+  theme_light() +
+  labs(
+    x = "Gene ID",
+    y = "Scaled expression",
+    title = "Scaled expression distribution"
+  )
+
+ggsave(filename = "05_scaled_expressions_boxplot.png",
+       plot = boxplot_scaled,
+       device = "png",
+       path = "../results")
 
 boxplot_scaled
 ```
@@ -58,7 +80,7 @@ boxplot_scaled
 
 ```{r}
 # Putting gene accession numbers in one column
-cancer_data_long <- cancer_data_rescaled |>
+cancer_data_long <- cancer_data_scaled |>
   select(!c(cancer,
             patient_id)) |> 
   pivot_longer(cols = -cancer_type_number,
@@ -159,12 +181,12 @@ forest_plot
 ```{r}
 # Making a heat map for the 'top' 25 genes (= with higher expression in AML)
 heatmap_AML <- heatmap_from_data(cancer_data_estimates,
-                                 cancer_data_rescaled,
+                                 cancer_data_scaled,
                                  top = TRUE)
 
 # Making a heat map for the 'bottom' 25 genes (= with higher expression in ALL)
 heatmap_ALL <- heatmap_from_data(cancer_data_estimates,
-                                 cancer_data_rescaled,
+                                 cancer_data_scaled,
                                  top = FALSE)
 
 # Saving plots
