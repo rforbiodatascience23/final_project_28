@@ -66,16 +66,6 @@ remove(expression_clean, patient_data)
 expression_tidy_scaled <- expression_tidy |> 
     mutate(across(4:last_col(), ~as.numeric(scale(.))))
 
-# expression_tidy_scaled 
-# <- expression_tidy |> 
-#   pivot_longer(cols = -c(patient_id, cancer, cancer_type_number), names_to = "gene", values_to = "expr") |>
-#   group_by(gene) |>
-#   nest() |>
-#   mutate(data = map(.x = data, .f = ~ mutate(.x, expr = as.numeric(scale(expr))))) |>
-#   unnest(cols = c(data)) |>
-#   ungroup() |>
-#   pivot_wider(names_from = gene, values_from = expr)
-
 # writing to csv
 write.csv(expression_tidy_scaled,
           "../data/03_expression_scaled.csv",
