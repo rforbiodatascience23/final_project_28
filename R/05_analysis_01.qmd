@@ -1,5 +1,5 @@
 ---
-title: "05. Describing expression data"
+title: "05. Analysing expression data: heat maps"
 execute: 
   echo: false
   eval: true
