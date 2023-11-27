@@ -9,35 +9,69 @@ format:
 ---
 
 ### Introduction
+
+::: columns
 ::: {.column width="50%"}
-- Gene expression dataset (Golub et al.)
-- Acute myeloid leukemia (AML)
-- Acute lymphoblastic leukemia (ALL)
-- Original experiment aimed for Machine Learning approach
-- Aim: Compare the two groups
+-   Gene expression dataset (Golub et al.)
+-   Acute myeloid leukemia (AML)
+-   Acute lymphoblastic leukemia (ALL)
+-   Original experiment aimed for Machine Learning approach
+-   Aim: Compare the two groups
 :::
 
 ::: {.column width="50%"}
-::: {.r-stack}
+::: r-stack
 ![](../results/99_leukemia.jpg){fig-align="left"}
+:::
+:::
+:::
 
+------------------------------------------------------------------------
+
+### Materials and Methods 1
+
+::: container
+::: container
+In the project we used the *Gene expression dataset (Golub et al.)*
+
+::: columns
+::: {.column width="50%"}
+- Dataset content
+
+    -   72 patients
+    -   7129 genes
+    -   Combined training and test datasets
+    -   Normalization
+:::
+
+::: {.column width="50%"}
+-   Three tables
+
+    -   72 entries, 2 variables\
+    -   7129 entries, 70 variables\
+    -   7129 entries, 78 variables
+:::
+:::
 :::
 :::
 
----
+------------------------------------------------------------------------
 
-### Materials and Methods
-- 72 patient
-- 7129 genes
-- Combined training and test dataset
-- Normalization
+### Materials and Methods 2
 
+::: columns
+::: {.column width="50%"}
+1\. Merging\
+2. Cleaning\
+3. Transforming\
+4. Augmenting\
+5. Analysis
+:::
+:::
 
+------------------------------------------------------------------------
 
----
-
-
-### Results - Differential expression heatmap {.smaller}
+#### Results - Differential expression heatmap {.smaller}
 
 ::: columns
 ::: {.column width="30%"}
@@ -50,35 +84,35 @@ format:
 :::
 
 ::: {.column width="70%"}
-::: {.r-stack}
-![](../results/05_heatmap_1.png){.fragment .fade-in-then-out}
+::: r-stack
+![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"}
 
-
-![](../results/05_heatmap_2.png){.fragment .fade-in-then-out}
+![](../results/05_heatmap_ALL.png){.fragment .fade-in-then-out height="600"}
 :::
 :::
 :::
 
----
+------------------------------------------------------------------------
 
 ### Results - PCA {.smaller}
+
 ::: columns
 ::: {.column width="40%"}
-::: {.r-fit-text}
-- 59 PCs explain 95% of variance in the data, top 2 - 26%
-- PCA data points stratified by cancer type.
-- PC1 - AML points spread out, ALL points more clustered
-- PC2 - ALL points spread out, AML points more clustered.
+::: r-fit-text
+-   59 PCs explain 95% of variance in the data. Top 2 - 26%
+-   PCA data points stratified by cancer type.
+-   PC1 - AML points spread out, ALL points more clustered
+-   PC2 - ALL points spread out, AML points more clustered.
 :::
 :::
-
 
 ::: {.column width="60%"}
-::: {.r-stack}
+::: r-stack
 ![](../results/05_pc_barplot.png){.fragment .fade-in-then-out width="900" height="550"}
 
 ![](../results/05_pca.png){.fragment .fade-in-then-out}
 :::
 :::
 :::
----
+
+------------------------------------------------------------------------

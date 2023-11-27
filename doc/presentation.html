@@ -339,6 +339,7 @@ Group 28
 <section class="slide level2">
 
 <h3 id="introduction">Introduction</h3>
+<div class="columns">
 <div class="column" style="width:50%;">
 <ul>
 <li>Gene expression dataset (Golub et al.)</li>
@@ -347,8 +348,7 @@ Group 28
 <li>Original experiment aimed for Machine Learning approach</li>
 <li>Aim: Compare the two groups</li>
 </ul>
-</div>
-<div class="column" style="width:50%;">
+</div><div class="column" style="width:50%;">
 <div class="r-stack">
 <div class="quarto-figure quarto-figure-left">
 <figure>
@@ -357,20 +357,57 @@ Group 28
 </div>
 </div>
 </div>
+</div>
 </section>
 <section class="slide level2">
 
-<h3 id="materials-and-methods">Materials and Methods</h3>
+<h3 id="materials-and-methods-1">Materials and Methods 1</h3>
+<div class="container">
+<div class="container">
+<p>In the project we used the <em>Gene expression dataset (Golub et al.)</em></p>
+<div class="columns">
+<div class="column" style="width:50%;">
 <ul>
-<li>72 patient</li>
+<li><p>Dataset content</p>
+<ul>
+<li>72 patients</li>
 <li>7129 genes</li>
-<li>Combined training and test dataset</li>
+<li>Combined training and test datasets</li>
 <li>Normalization</li>
+</ul></li>
 </ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><p>Three tables</p>
+<ul>
+<li>72 entries, 2 variables<br>
+</li>
+<li>7129 entries, 70 variables<br>
+</li>
+<li>7129 entries, 78 variables</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section class="slide level2">
 
-<h3 class="smaller" id="results---differential-expression-heatmap">Results - Differential expression heatmap</h3>
+<h3 id="materials-and-methods-2">Materials and Methods 2</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>1. Merging<br>
+2. Cleaning<br>
+3. Transforming<br>
+4. Augmenting<br>
+5. Analysis</p>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 class="smaller" id="results---differential-expression-heatmap">Results - Differential expression heatmap</h4>
 <div class="columns">
 <div class="column" style="width:30%;">
 <div class="r-fit-text">
@@ -384,8 +421,8 @@ Group 28
 </div>
 </div><div class="column" style="width:70%;">
 <div class="r-stack">
-<p><img data-src="../results/05_heatmap_1.png" class="fragment fade-in-then-out"></p>
-<p><img data-src="../results/05_heatmap_2.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="../results/05_heatmap_AML.png" class="fragment fade-in-then-out" height="600"></p>
+<p><img data-src="../results/05_heatmap_ALL.png" class="fragment fade-in-then-out" height="600"></p>
 </div>
 </div>
 </div>
@@ -397,7 +434,7 @@ Group 28
 <div class="column" style="width:40%;">
 <div class="r-fit-text">
 <ul>
-<li>59 PCs explain 95% of variance in the data, top 2 - 26%</li>
+<li>59 PCs explain 95% of variance in the data. Top 2 - 26%</li>
 <li>PCA data points stratified by cancer type.</li>
 <li>PC1 - AML points spread out, ALL points more clustered</li>
 <li>PC2 - ALL points spread out, AML points more clustered.</li>
