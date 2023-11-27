@@ -50,7 +50,6 @@ format:
 ### Discussion
 
 ::: {.r-stack}
-![](../results/05_heatmap_1.png){.fragment}
+![](../results/04_mean_expression_hist_general.png)
 
-![](../results/05_heatmap_2.png){.fragment}
 :::
