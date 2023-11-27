@@ -1,0 +1,998 @@
+---
+title: "00. Running all project scripts"
+execute: 
+  echo: false
+  eval: true
+format: html
+editor: 
+  markdown: 
+    wrap: 80
+---
+
+## Loading all libraries -------------------------------------------------------
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(patchwork)
+library(ggridges)
+library(broom)
+library(purrr)
+library(ggplot2)
+```
+
+## 99: Loading custom functions ------------------------------------------------
+
+### Heat map function
+
+```{r}
+heatmap_from_data <- function(estimates,
+                              tidy_data,
+                              top = TRUE) {
+  
+  #' ARGUMENTS:
+  #'  estimates    tibble; contains slope values from linear models
+  #'  tidy_data    tibble; tidy linear model object
+  #'  top          bool; if TRUE, slice_max is used, else slice_max is used;
+  #'               "top = TRUE" means taking genes whose expression is higher
+  #'               in AML than in ALL
+
+  if (isTRUE(top)) {
+    sig_list <- estimates |>
+      filter(is_significant == "yes") |>
+      slice_max(estimate, n = 25) |>
+      select(gene) |>
+      pull() |>
+      as.character()
+  } else {
+    sig_list <- estimates |>
+      filter(is_significant == "yes") |>
+      slice_min(estimate, n = 25) |>
+      select(gene) |>
+      pull() |>
+      as.character()
+  }
+  
+  cancer_data_rescaled_sig <- tidy_data |> 
+    select(patient_id,
+           cancer,
+           all_of(sig_list)) |>
+    arrange(cancer)
+  
+  # Using '$' to fix the order of row in this column
+  cancer_data_rescaled_sig$patient_id <- factor(
+    cancer_data_rescaled_sig$patient_id, 
+    levels = cancer_data_rescaled_sig$patient_id
+    )
+    
+  heatmap <- cancer_data_rescaled_sig |>
+    pivot_longer(cols = -c(patient_id, cancer),
+                 names_to = "gene",
+                 values_to = "expr") |>
+    mutate(gene = str_extract(gene, "[A-Z, 0-9]+")) |>
+    ggplot(aes(x = gene,
+               y = patient_id)) +
+    geom_tile(aes(fill = expr)) +
+    scale_fill_viridis_c() +
+    labs(
+      title = "Differential expression heatmap between AML and ALL",
+      x = "Gene ID",
+      y = element_blank()
+      ) +
+    theme(
+      axis.text.x = element_text(angle=45,
+                                 hjust = 1,
+                                 size = 8),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      legend.position = "bottom",
+      plot.title = element_text(hjust = 0.5)
+      ) +
+    facet_grid(vars(cancer), space = "free_y", scales = "free_y")
+}
+```
+
+### Labeller function for facets
+
+```{r}
+facet_labeller <- function(variable, value) {
+  
+  #' "custom_labels" needs to be defined globally as a list:
+  #'    custom_labels = list("variable_name_in_tibble" = "desired_label", [...])
+
+  custom_labels[value]
+  # TODO: change labeller so it is not deprecated !!!
+}
+```
+
+### Function to find n most/least expressed genes
+
+```{r}
+find_most_expressed <- function(data,
+                                n,
+                                reverse = FALSE) {
+  
+  #' ARGUMENTS:
+  #'  data      tibble; contains columns "patient_id", "gene_accession_number",
+  #'            "gene_description", "expression", "cancer"
+  #'  n         int; the number of genes to consider
+  #'  reverse   bool; if TRUE, n least expressed genes are selected, otherwise
+  #'            n most expressed are selected
+  
+  # 'highest' expression based on mean per gene
+  data_means <- data |> 
+    group_by(gene_accession_number) |> 
+    summarise(mean = mean(expression))
+  
+  # reversing sorting order for 'lowest' expression
+  if (reverse == TRUE) {
+    data_means <- data_means |>
+      arrange(mean,
+              .by_group = TRUE)
+  } else {
+    data_means <- data_means |> 
+      arrange(desc(mean),
+              .by_group = TRUE)
+  }
+  
+  # selecting n from the top
+  gene_list <- data_means |> 
+    slice(1:n) |> 
+    select(gene_accession_number) |>
+    # later selection with %in% requires a vector
+    pull()
+  
+  data |> 
+    filter(gene_accession_number %in% gene_list) |> 
+    group_by(gene_description)
+}
+```
+
+## 01: Loading data files ------------------------------------------------------
+
+### Source of data
+
+The data set used in this project was originally published by [Gloub *et al.*
+(1999)](https://www-science-org.proxy.findit.cvt.dk/doi/10.1126/science.286.5439.531#body-ref-RF14)
+and was downloaded from
+<https://www.kaggle.com/datasets/crawford/gene-expression/>.
+
+### Brief data description
+
+There are 3 files of interest in `../data/`:
+
+1.  `actual.csv`,
+
+2.  `data_set_ALL_AML_independent.csv`, and
+
+3.  `data_set_ALL_AML_train.csv`.
+
+The first one contains (numeric) patient IDs in column 'patient' and cancer type
+(ALL for acute lymphoblastic leukemia, AML for acute myeloid leukemia) in column
+'cancer'. The remaining two contain gene expression data per gene in row, while
+the columns hold information on each gene's description, its accession number,
+patient ID and something denoted gene "call". The latter refers to whether the
+authors of the paper deemed the gene present (P), marginal (M), or absent (A) in
+the sample from each patient.
+
+### Loading data
+
+```{r}
+# Reading each of the 3 data files
+patient_data <- read_csv("../_raw/actual.csv")
+expression_indep <- read_csv("../_raw/data_set_ALL_AML_independent.csv")
+expression_train <- read_csv("../_raw/data_set_ALL_AML_train.csv")
+
+# Combining the 2 tibbles with gene expression data
+expression <- merge(x = expression_indep,
+                    y = expression_train,
+                    by.x = c("Gene Description",
+                             "Gene Accession Number"),
+                    by.y = c("Gene Description",
+                             "Gene Accession Number")
+                    )
+```
+
+### Writing combined data
+
+```{r}
+write.csv(expression,
+          "../data/01_expression_data.csv",
+          row.names = FALSE
+          )
+
+write.csv(patient_data,
+          "../data/01_patient_data.csv",
+          row.names = FALSE
+          )
+ 
+# Removing objects to free memory
+remove(expression_indep,
+       expression_train,
+       expression,
+       patient_data
+       )
+```
+
+## 02: Cleaning data -----------------------------------------------------------
+
+### Loading and cleaning data
+
+```{r}
+expression_data <- read_csv("../data/01_expression_data.csv")
+
+# Removing gene "call" columns
+expression_data <- expression_data |>
+  select(-matches("^call\\.\\.\\.\\d+")
+         )
+# Cleaning column names
+expression_data <- expression_data |>
+  rename(gene_description = "Gene Description",
+         gene_accession_number = "Gene Accession Number"
+         )
+```
+
+### Transforming data
+
+```{r}
+# Saving gene information
+gene_info <- expression_data |> 
+  select(gene_description, gene_accession_number)
+
+# Pivoting expression data 
+expression_clean <- expression_data |>
+  select(-gene_description) |> 
+  pivot_longer(cols = -gene_accession_number,
+               names_to = "patient_id",
+               values_to = "expression"
+               ) |> 
+  pivot_wider(names_from = gene_accession_number,
+              values_from = expression
+              )
+```
+
+### Writing clean data
+
+```{r}
+write.csv(gene_info,
+          "../data/02_gene_info.csv",
+          row.names = FALSE
+          )
+
+write.csv(expression_clean,
+          "../data/02_expression_clean.csv",
+          row.names = FALSE
+          )
+
+# Removing objects to free memory
+remove(expression_data)
+remove(expression_clean)
+```
+
+## 03: Augmenting --------------------------------------------------------------
+
+### Augmenting expression data
+
+```{r}
+patient_data <- read_csv("../data/01_patient_data.csv")
+
+expression_clean <- read_csv("../data/02_expression_clean.csv")
+
+# Adding numeric values for the cancer types 
+patient_data <- patient_data |>
+  mutate(
+    cancer_type_number = case_when(
+      cancer == "ALL" ~ 0,
+      cancer == "AML" ~ 1
+    )
+  ) 
+
+# Merging expression data with patient data based on patient ID
+expression_tidy <- merge(x = expression_clean,
+                        y = patient_data,
+                        by.x = "patient_id",
+                        by.y = "patient")
+
+# Sorting the expression tibble and re-arranging columns
+expression_tidy <- expression_tidy |>
+  select(patient_id,
+         cancer,
+         cancer_type_number,
+         everything()
+         ) |>
+  mutate(patient_id = sapply(patient_id, as.numeric)
+         ) |>
+  arrange(patient_id)
+
+# Writing to csv
+write.csv(expression_tidy,
+          "../data/03_expression_tidy.csv",
+          row.names = FALSE
+          )
+
+# Removing objects to free memory
+remove(expression_clean, patient_data)
+```
+
+### Scaling (standardizing) expression data
+
+```{r}
+# A function for standardizing gene expression values
+expression_tidy_scaled <- expression_tidy |> 
+    mutate(across(4:last_col(), ~as.numeric(scale(.))))
+
+# Writing to csv
+write.csv(expression_tidy_scaled,
+          "../data/03_expression_scaled.csv",
+          row.names = FALSE)
+
+# Freeing memory
+remove(expression_tidy)
+remove(expression_tidy_scaled)
+```
+
+## 04: Describing data (exploratory data analysis) -----------------------------
+
+### Loading and cleaning data
+
+```{r}
+expression_data <- read_csv("../data/01_expression_data.csv")
+patient_data    <- read_csv("../data/01_patient_data.csv")
+
+# removing gene "call" columns
+expression_data <- expression_data |>
+  select(-matches("^call\\.\\.\\.\\d+"))
+
+# cleaning column names
+expression_data <- expression_data |>
+  rename(
+    gene_description = "Gene Description",
+    gene_accession_number = "Gene Accession Number"
+    ) |> 
+  relocate(
+    gene_description,
+    .after = last_col()
+    )
+```
+
+### Basic data set information
+
+```{r}
+# Dimensions
+expression_data_dims <- expression_data |> 
+  dim() |> 
+  print() # rows x columns
+```
+
+```{r}
+# Preview of data sample
+expression_data |> 
+  sample_n(5)
+```
+
+### Transforming data
+
+```{r}
+# pivoting to put patient ID, gene, cancer, expression in columns
+expression_long <- expression_data |> 
+  pivot_longer(cols = -c(gene_description,
+                         gene_accession_number),
+               names_to  = "patient_id",
+               values_to = "expression")
+```
+
+```{r}
+# merging expression data with patient data based on patient ID
+expression_long_with_cancer <- merge(x = expression_long,
+                                     y = patient_data,
+                                     by.x = "patient_id",
+                                     by.y = "patient")
+
+expression_long_with_cancer |> 
+  sample_n(5) |> 
+  view()
+```
+
+### Exploratory data analysis
+
+#### Cancer sample sizes
+
+```{r}
+n_patients <- patient_data |> 
+  ggplot(aes(x = cancer,
+             fill = cancer)) +
+  geom_bar(alpha = 0.7) +
+  scale_fill_viridis_d() +
+  theme_light() +
+  theme(plot.title = element_text(hjust = 0.5))
+  labs(
+    title = "Sample sizes per cancer type",
+    x = "Cancer type",
+    y = "Count"
+    )
+
+ggsave(filename = "04_patients_per_cancer.png",
+       plot = n_patients,
+       device = "png",
+       path = "../results")
+
+n_patients
+```
+
+#### Distributions of mean expressions
+
+```{r}
+expression_means <- expression_long_with_cancer |> 
+  group_by(cancer, gene_description) |> 
+  summarise(mean = mean(expression))
+
+# Constructing custom labels for a custom 'facet_labeller' function
+custom_labels <- list(
+  "ALL" = "Acute lymphoid leukemia (ALL)",
+  "AML" = "Acute myeloid leukemia (AML)")
+
+# Making the plot 'base' to re-use later
+mean_expression_hist <- expression_means |> 
+  ggplot(aes(x = mean,
+             fill = cancer))
+
+# Editing layout
+mean_expression_hist_general <- mean_expression_hist +
+  geom_histogram(binwidth = 500,
+                 alpha = 0.7) +
+  facet_wrap(~cancer,
+             nrow = 2,
+             labeller = facet_labeller)
+
+mean_expression_hist_general <- mean_expression_hist_general +
+  labs(
+    title = "Distributions of mean gene expressions",
+    x = "Mean gene expression (a.u.)",
+    y = "Count"
+  ) +
+  theme_light() +
+  scale_fill_viridis_d(guide = "none") +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "panel",
+    strip.text = element_text(size = 11,
+                              face = "bold"),
+    axis.title.y = element_text(size = 11,
+                                face = "bold",
+                                angle = 0),
+    axis.text.y = element_text(size = 11,
+                               colour = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+
+ggsave(filename = "04_mean_expression_hist_general.png",
+       plot = mean_expression_hist_general,
+       device = "png",
+       path = "../results")
+
+mean_expression_hist_general
+```
+
+#### Zooming in on around the MODE
+
+```{r}
+mean_expression_hist_zoom <- mean_expression_hist +
+  geom_histogram(binwidth = 250,
+                 alpha = 0.7) +
+  coord_cartesian(xlim = c(-1000, 3000)) +
+  labs(
+    title = "Zooming in on means around mode",
+    x = "Mean gene expression (a.u.)",
+    y = "Count"
+  ) +
+  theme_light() +
+  scale_fill_viridis_d() +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "panel",
+    strip.text = element_text(size = 11,
+                              face = "bold"),
+    axis.title.y = element_text(size = 11,
+                                face = "bold",
+                                angle = 0,
+                                vjust = 0.5),
+    axis.text.y = element_text(size = 11,
+                               colour = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+  
+
+ggsave(filename = "04_mean_expression_hist_zoom.png",
+       plot = mean_expression_hist_zoom,
+       device = "png",
+       path = "../results")
+
+mean_expression_hist_zoom
+```
+
+#### Zooming in on NEGATIVE means
+
+```{r}
+mean_expression_hist +
+  geom_histogram(binwidth = 250,
+                 alpha = 0.7) +
+  coord_cartesian(xlim = c(-3000, -1)) +
+  labs(
+    title = "Zooming in on negative means",
+    x = "Mean gene expression (a.u.)",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d(guide = "none") +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "panel",
+    strip.text = element_text(size = 11,
+                              face = "bold"),
+    axis.title.y = element_text(size = 11,
+                                face = "bold",
+                                angle = 0,
+                                vjust = 0.5),
+    axis.text.y = element_text(size = 11,
+                               colour = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+```
+
+#### Zooming in on POSITIVE means
+
+```{r}
+mean_expression_hist +
+  geom_histogram(binwidth = 2000,
+                 alpha = 0.7) +
+  coord_cartesian(xlim = c(0, 30000)) +
+  labs(
+    title = "Zooming in on positive means",
+    x = "Mean gene expression (a.u.)",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  scale_fill_viridis_d(guide = "none") +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "panel",
+    strip.text = element_text(size = 11,
+                              face = "bold"),
+    axis.title.y = element_text(size = 11,
+                                face = "bold",
+                                angle = 0,
+                                vjust = 0.5),
+    axis.text.y = element_text(size = 11,
+                               colour = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11)
+  )
+```
+
+### Finding highest and lowest expressed genes
+
+```{r}
+# Find 10 MOST expressed genes
+highest_10_genes_ALL <- expression_long_with_cancer |> 
+  filter(cancer == "ALL") |> 
+  find_most_expressed(n = 10)
+
+highest_10_genes_AML <- expression_long_with_cancer |>
+  filter(cancer == "AML") |> 
+  find_most_expressed(n = 10)
+
+# Find 10 LEAST expressed genes
+lowest_10_genes_ALL <- expression_long_with_cancer |> 
+  find_most_expressed(n = 10,
+                      reverse = TRUE)
+
+lowest_10_genes_AML <- expression_long_with_cancer |> 
+  filter(cancer == "AML") |> 
+  find_most_expressed(n = 10,
+                      reverse = TRUE)
+```
+
+### Plotting distributions of 10 highest expressed genes
+
+```{r}
+#| label: highest-ridges
+#| fig-width: 7
+#| fig-asp: 0.5
+#| out-width: "600"
+
+# Combining at this point makes for easier plotting
+highest_10_combined <- bind_rows(highest_10_genes_ALL,
+                                 highest_10_genes_AML)
+
+highest_10_plot <- highest_10_combined |> 
+  ggplot(
+    aes(x = expression,
+        y = gene_description,
+        fill = cancer)
+  ) +
+  geom_density_ridges(
+    alpha = 0.5,
+    scale = 1,
+    panel_scaling = FALSE
+  ) +
+  scale_fill_viridis_d(name = "Cancer type") +
+  labs(
+    title = "Highest mean expression per cancer type.",
+    x = "Gene expression (a.u.)",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "plot",
+    plot.subtitle = element_text(size = 10),
+    axis.text.y = element_text(size = 10,
+                               color = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11),
+    legend.title = element_text(size = 11,
+                                face = "bold"),
+    legend.text = element_text(size = 11),
+    legend.position = "top",
+    legend.justification = c(0, 0)
+  )
+
+highest_10_plot
+```
+
+### Plotting distribution of 10 lowest expressed genes
+
+```{r}
+#| label: lowest-plots
+#| fig-width: 7
+#| fig-asp: 0.5
+#| out-width: "600"
+
+# Combining at this point makes for easier plotting
+lowest_10_combined <- bind_rows(lowest_10_genes_ALL,
+                                lowest_10_genes_AML)
+
+lowest_10_plot <- lowest_10_combined |> 
+  ggplot(
+    aes(x = expression,
+        y = gene_description,
+        fill = cancer)
+  ) +
+  geom_density_ridges(
+    alpha = 0.5,
+    scale = 1,
+    panel_scaling = FALSE
+  ) +
+  scale_fill_viridis_d(name = "Cancer type") +
+  labs(
+    title = "Lowest mean expression per cancer type.",
+    x = "Gene expression (a.u.)",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12,
+                              face = "bold"),
+    plot.title.position = "plot",
+    plot.subtitle = element_text(size = 10),
+    axis.text.y = element_text(size = 10,
+                               color = "black"),
+    axis.title.x = element_text(size = 11,
+                                face = "bold"),
+    axis.text.x = element_text(size = 11),
+    legend.title = element_text(size = 11,
+                                face = "bold"),
+    legend.text = element_text(size = 11),
+    legend.position = "top",
+    legend.justification = c(0, 0)
+  )
+
+lowest_10_plot
+```
+
+## 05: Analysis ----------------------------------------------------------------
+
+### Heat maps
+
+#### Loading unscaled data
+
+```{r}
+cancer_data <- read_csv("../data/03_expression_tidy.csv")
+
+# Exploring distributions
+boxplot_unscaled <- cancer_data |>
+  select(3:14) |>
+  pivot_longer(cols = -cancer_type_number,
+               names_to = "gene",
+               values_to = "expr") |>
+  ggplot(aes(x = gene,
+             y = expr)) +
+  geom_boxplot() +
+  theme_light() +
+  labs(
+    x = "Gene ID",
+    y = "Expression",
+    title = "Expression distribution"
+  )
+
+ggsave(filename = "05_expressions_boxplot.png",
+       plot = boxplot_unscaled,
+       device = "png",
+       path = "../results")
+
+boxplot_unscaled
+```
+
+#### Loading scaled data
+
+```{r}
+cancer_data_scaled <- read_csv("../data/03_expression_scaled.csv")
+
+# Checking the scaling worked
+boxplot_scaled <- cancer_data_scaled |>
+  select(3:14) |>
+  pivot_longer(cols = -cancer_type_number,
+               names_to = "gene",
+               values_to = "expr") |>
+  ggplot(aes(x = gene,
+             y = expr)) +
+  geom_boxplot() +
+  theme_light() +
+  labs(
+    x = "Gene ID",
+    y = "Scaled expression",
+    title = "Scaled expression distribution"
+  )
+
+ggsave(filename = "05_scaled_expressions_boxplot.png",
+       plot = boxplot_scaled,
+       device = "png",
+       path = "../results")
+
+boxplot_scaled
+```
+
+#### Transforming data
+
+```{r}
+# Putting gene accession numbers in one column
+cancer_data_long <- cancer_data_scaled |>
+  select(!c(cancer,
+            patient_id)) |> 
+  pivot_longer(cols = -cancer_type_number,
+               names_to = "gene",
+               values_to = "expr") 
+```
+
+#### Linear modelling
+
+```{r}
+# Preparing data for and performing linear modelling
+cancer_data_long_nested <- cancer_data_long |>
+  group_by(gene) |>
+  nest() |>
+  mutate(model_object = map(.x = data,
+                            .f = ~lm(formula = expr ~ cancer_type_number,
+                                     data = .x)))
+```
+
+```{r}
+# Tidying the model objects
+cancer_data_long_nested <- cancer_data_long_nested |>
+  mutate(model_object_tidy = map(.x = model_object,
+                                 .f = ~tidy(x = .x,
+                                            conf.int = TRUE,
+                                            conf.level = 0.95)))
+```
+
+#### Processing the results of modelling
+
+```{r}
+# Un-nesting to have the model results as part of the tibble
+cancer_data_estimates <- cancer_data_long_nested |>
+  unnest(model_object_tidy)
+
+# Freeing memory
+remove(cancer_data_long_nested)
+```
+
+```{r}
+# After modelling, the column 'term' has different values - we only want one
+cancer_data_estimates <- cancer_data_estimates |>
+  filter(term == "cancer_type_number") |>
+  select(gene,
+         p.value,
+         estimate,
+         conf.low,
+         conf.high) |>
+  ungroup()
+```
+
+```{r}
+# Using q values to add a column with information on significance
+cancer_data_estimates <- cancer_data_estimates |>
+  mutate(
+    q.value = p.adjust(p = p.value,
+                       method = p.adjust.methods)
+    ) |>
+  mutate(
+    is_significant = case_when(
+      q.value > 0.05 ~ "no",
+      q.value <= 0.05 ~ "yes")
+    ) |>
+  mutate(
+    is_significant = factor(is_significant,
+                            levels = c("no", "yes")))
+```
+
+#### Making plots
+
+```{r}
+# Making a forest plot of differential gene expression between cancer types
+forest_plot <- cancer_data_estimates |>
+  filter(is_significant == "yes") |>
+  ggplot(
+    aes(x = estimate,
+        y = fct_reorder(gene, estimate),
+        xmin = conf.low,
+        xmax = conf.high)
+    ) +
+  geom_errorbarh() +
+  geom_point() +
+  labs(
+    title = "Gene expression difference between cancer types",
+    x = "Estimates (95% CIs)",
+    y = "Gene"
+    ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 6.5),
+    plot.title.position = "plot"
+    ) +
+  geom_vline(xintercept = 0)
+
+forest_plot
+```
+
+```{r}
+# Making a heat map for the 'top' 25 genes (= with higher expression in AML)
+heatmap_AML <- heatmap_from_data(cancer_data_estimates,
+                                 cancer_data_scaled,
+                                 top = TRUE)
+
+# Making a heat map for the 'bottom' 25 genes (= with higher expression in ALL)
+heatmap_ALL <- heatmap_from_data(cancer_data_estimates,
+                                 cancer_data_scaled,
+                                 top = FALSE)
+
+# Saving plots
+ggsave(filename = "05_heatmap_AML.png",
+       plot = heatmap_AML,
+       device = "png",
+       path = "../results")
+
+ggsave(filename = "05_heatmap_ALL.png",
+       plot = heatmap_ALL,
+       device = "png",
+       path = "../results")
+
+heatmap_AML
+heatmap_ALL
+```
+
+### PCA
+
+#### Loading the data
+
+```{r}
+cancer_data_scaled <- read_csv("../data/03_expression_scaled.csv")
+```
+
+#### Performing a PCA analysis
+
+```{r}
+pca_fit <- cancer_data_scaled |>
+  select(!c(1:3)) |>  # Retain only numeric columns
+  prcomp(scale = FALSE)  # Perform PCA on scaled data
+
+pca_data <- pca_fit |>
+  augment(cancer_data_scaled)
+
+# Freeing memory
+remove(cancer_data_scaled)
+
+# Plotting the data in PC coordinates
+pca_plot <- pca_data |> 
+  ggplot(
+    aes(x = .fittedPC1,
+        y = .fittedPC2,
+        color = cancer,
+        size = .fittedPC3)
+    ) + 
+  geom_point(alpha = 0.5) +
+  scale_size(range = c(1, 8)) +
+  scale_color_manual(values = c("ALL" = "#5855da",
+                                "AML" = "#ff6500")) +
+  labs(
+    title = "PCA of gene expression by cancer type", 
+    x = "Principal component 1",
+    y = "Principal component 2",
+    color = "Cancer type"
+    ) +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+    )
+
+ggsave(filename = "05_pca.png",
+       plot = pca_plot,
+       device = "png",
+       path = "../results")
+
+pca_plot
+```
+
+#### Exploring variance explained by PCs and eigenvalues
+
+```{r}
+variance_95 <- pca_fit |> 
+  tidy(matrix = "eigenvalues") |> 
+  arrange() |> 
+  filter(cumulative < 0.95)
+```
+
+```{r}
+# Bar plot for 95% PCs
+pc_barplot <- variance_95 |> 
+  ggplot(aes(x = PC,
+             y = percent,
+             fill = percent)) +
+  geom_col(alpha = 0.8) +
+  scale_fill_viridis_c(guide = NULL) +
+  scale_x_continuous() +
+  scale_y_continuous(
+    labels = scales::percent_format()) +
+  labs(
+    title = "Contrtibutions of PCs to explained variance", 
+    x = "PCs",
+    y = "Percentage of variance explained"
+    )
+  
+ggsave(filename = "05_pc_barplot.png",
+       plot = pc_barplot,
+       device = "png",
+       path = "../results")
+
+pc_barplot
+```
+
+```{r}
+# Bar plot for first two PCs
+first_two_pc <- variance_95 |> 
+  filter(PC < 3) 
+first_two_pc |> 
+  ggplot(aes(x = PC, y = percent)) +
+  geom_col(fill = "#56B4E9",
+           alpha = 0.8) +
+  scale_x_discrete(limits = c("1", "2")) + 
+  scale_y_continuous() +
+  labs(
+    title = "Percentage contribution to variance for the first two PCs", 
+    x = "PCs",
+    y = "Percentage of variance")
+
+# Freeing memory
+remove(pca_data, pca_fit)
+```
