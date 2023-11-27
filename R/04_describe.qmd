@@ -30,17 +30,18 @@ patient_data    <- read_csv("../data/01_patient_data.csv")
 
 # removing gene "call" columns
 expression_data <- expression_data |>
-  select(-matches("^call\\.\\.\\.\\d+")
-         )
+  select(-matches("^call\\.\\.\\.\\d+"))
 
 # cleaning column names
 expression_data <- expression_data |>
-  rename(gene_description = "Gene Description",
-         gene_accession_number = "Gene Accession Number"
-         ) |> 
-  relocate(gene_description,
-           .after = last_col()
-           )
+  rename(
+    gene_description = "Gene Description",
+    gene_accession_number = "Gene Accession Number"
+    ) |> 
+  relocate(
+    gene_description,
+    .after = last_col()
+    )
 ```
 
 ## Basic data set information
@@ -91,12 +92,12 @@ custom_labels <- list(
   "ALL" = "Acute lymphoid leukemia (ALL)",
   "AML" = "Acute myeloid leukemia (AML)")
 
+# Making the plot 'base' to re-use later
 mean_expression_hist <- expression_means |> 
-  ggplot(
-    aes(x = mean,
-        fill = cancer)
-  )
+  ggplot(aes(x = mean,
+             fill = cancer))
 
+# Editing layout
 mean_expression_hist_general <- mean_expression_hist +
   geom_histogram(binwidth = 500,
                  alpha = 0.7) +
@@ -127,14 +128,18 @@ mean_expression_hist_general <- mean_expression_hist_general +
     axis.text.x = element_text(size = 11)
   )
 
+ggsave(filename = "04_mean_expression_hist_general.png",
+       plot = mean_expression_hist_general,
+       device = "png",
+       path = "../results")
+
 mean_expression_hist_general
-ggsave(filename = "04_mean_expression_hist_general.png", plot = mean_expression_hist_general, device = "png", path = "../results")
 ```
 
 ### Zooming in on around the MODE
 
 ```{r}
-mean_expression_hist +
+mean_expression_hist_zoom <- mean_expression_hist +
   geom_histogram(binwidth = 250,
                  alpha = 0.7) +
   coord_cartesian(xlim = c(-1000, 3000)) +
@@ -161,6 +166,13 @@ mean_expression_hist +
                                 face = "bold"),
     axis.text.x = element_text(size = 11)
   )
+
+ggsave(filename = "04_mean_expression_hist_zoom.png",
+       plot = mean_expression_hist_zoom,
+       device = "png",
+       path = "../results")
+
+mean_expression_hist_zoom
 ```
 
 ### Zooming in on NEGATIVE means
@@ -227,7 +239,7 @@ mean_expression_hist +
   )
 ```
 
-## Finding highest and lowest expressed genes // TODO: put in a function
+## Finding highest and lowest expressed genes // TODO: make a function
 
 ```{r}
 # Find 10 MOST expressed genes
@@ -250,7 +262,7 @@ lowest_10_genes_AML <- expression_long_with_cancer |>
                       reverse = TRUE)
 ```
 
-## Plotting distributions of 10 highest expressed genes // TODO: put in a function
+## Plotting distributions of 10 highest expressed genes // TODO: make a function
 
 ```{r}
 #| label: highest-ridges

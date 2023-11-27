@@ -1,128 +1,183 @@
+---
+title: "05. Describing expression data"
+execute: 
+  echo: false
+  eval: true
+format: html
+editor: 
+  markdown: 
+    wrap: 80
+---
+
+## Loading libraries
+
 ```{r}
 library("tidyverse")
 library("patchwork")
 library("broom")
 library("purrr")
-
 ```
+
+## Loading unscaled data
 
 ```{r}
 cancer_data <- read_csv("../data/03_expression_tidy.csv")
-cancer_data |> select(3:14) |>
+
+# Exploring distributions
+boxplot_unscaled <- cancer_data |>
+  select(3:14) |>
   pivot_longer(cols = -cancer_type_number,
                names_to = "gene",
                values_to = "expr") |>
-  ggplot(aes(x = gene, y = expr)) + geom_boxplot()
+  ggplot(aes(x = gene,
+             y = expr)) +
+  geom_boxplot()
+
+boxplot_unscaled
 ```
 
+## Loading scaled data
 
 ```{r}
-#read scaled data from csv
-cancer_data_rescaled <- read_csv("../data/03_expression_scaled.csv")
-cancer_data_rescaled |> select(3:14) |>
+cancer_data_scaled <- read_csv("../data/03_expression_scaled.csv")
+
+# Checking the scaling worked
+boxplot_scaled <- cancer_data_scaled |>
+  select(3:14) |>
   pivot_longer(cols = -cancer_type_number,
                names_to = "gene",
                values_to = "expr") |>
-  ggplot(aes(x = gene, y = expr)) + geom_boxplot()
+  ggplot(aes(x = gene,
+             y = expr)) +
+  geom_boxplot()
 
-
+boxplot_scaled
 ```
 
+## Transforming data
+
 ```{r}
-#pivot data to long format
+# Putting gene accession numbers in one column
 cancer_data_long <- cancer_data_rescaled |>
-  select(!c(cancer, patient_id)) |> 
+  select(!c(cancer,
+            patient_id)) |> 
   pivot_longer(cols = -cancer_type_number,
                names_to = "gene",
                values_to = "expr") 
-
-
 ```
 
+## Linear modelling
+
 ```{r}
-# group by gene, nest, and perform linear modelling
+# Preparing data for and performing linear modelling
 cancer_data_long_nested <- cancer_data_long |>
   group_by(gene) |>
   nest() |>
   mutate(model_object = map(.x = data,
-      .f = ~lm(formula = expr ~ cancer_type_number,
-      data = .x)))
-
+                            .f = ~lm(formula = expr ~ cancer_type_number,
+                                     data = .x)))
 ```
 
-
-
 ```{r}
-# tidy the model object
+# Tidying the model objects
 cancer_data_long_nested <- cancer_data_long_nested |>
   mutate(model_object_tidy = map(.x = model_object,
                                  .f = ~tidy(x = .x,
                                             conf.int = TRUE,
                                             conf.level = 0.95)))
-
 ```
 
+## Processing results of modelling
+
 ```{r}
-# unnest to have linear model results part of the dataframe and free memory by removing nested object
+# Un-nesting to have the model results as part of the tibble
 cancer_data_estimates <- cancer_data_long_nested |>
   unnest(model_object_tidy)
+
+# Freeing memory
 remove(cancer_data_long_nested)
 ```
 
-
 ```{r}
-# filter rows and select only necessary columns
+# After modelling, the column 'term' has different values - we only want one
 cancer_data_estimates <- cancer_data_estimates |>
   filter(term == "cancer_type_number") |>
-  select(gene, p.value, estimate, conf.low, conf.high) |>
+  select(gene,
+         p.value,
+         estimate,
+         conf.low,
+         conf.high) |>
   ungroup()
-
-
 ```
 
 ```{r}
-# add column with q_values, used them to add column to 
-# identifier whether expression change is significant
+# Using q values to add a column with information on significance
 cancer_data_estimates <- cancer_data_estimates |>
-  mutate(q.value = p.adjust(p = p.value, method = p.adjust.methods)) |>
-  mutate(is_significant = case_when(
-    q.value > 0.05 ~ "no",
-    q.value <= 0.05 ~ "yes")) |>
-  mutate(is_significant = factor(is_significant,
-                            levels =  c("no", "yes")))
+  mutate(
+    q.value = p.adjust(p = p.value,
+                       method = p.adjust.methods)
+    ) |>
+  mutate(
+    is_significant = case_when(
+      q.value > 0.05 ~ "no",
+      q.value <= 0.05 ~ "yes")
+    ) |>
+  mutate(
+    is_significant = factor(is_significant,
+                            levels = c("no", "yes")))
 ```
 
+## Making plots
+
 ```{r}
-# make a forest plot showing change in expression between cancer types for genes
-# plot only significant expression changes
+# Making a forest plot of differential gene expression between cancer types
 forest_plot <- cancer_data_estimates |>
   filter(is_significant == "yes") |>
-  ggplot(aes(x = estimate,
-             y = fct_reorder(gene, estimate),
-             xmin = conf.low,
-             xmax = conf.high)) +
+  ggplot(
+    aes(x = estimate,
+        y = fct_reorder(gene, estimate),
+        xmin = conf.low,
+        xmax = conf.high)
+    ) +
   geom_errorbarh() +
   geom_point() +
-  labs(title = "Gene expression diff between cancers",
-       x = "Estimates (95% CIs)",
-       y = "Gene") +
+  labs(
+    title = "Gene expression difference between cancer types",
+    x = "Estimates (95% CIs)",
+    y = "Gene"
+    ) +
   theme_minimal() +
-  theme(axis.text.y = element_text(size = 6.5), plot.title.position = "plot") +
+  theme(
+    axis.text.y = element_text(size = 6.5),
+    plot.title.position = "plot"
+    ) +
   geom_vline(xintercept = 0)
+
 forest_plot
 ```
 
 ```{r}
-# Load function from 99_proj_func
-# Make heatmap
+# Making a heat map for the 'top' 25 genes (= with higher expression in AML)
+heatmap_AML <- heatmap_from_data(cancer_data_estimates,
+                                 cancer_data_rescaled,
+                                 top = TRUE)
 
-heatmap <- heatmap_from_data(cancer_data_estimates, cancer_data_rescaled, TRUE)
-heatmap2 <- heatmap_from_data(cancer_data_estimates, cancer_data_rescaled, FALSE)
-combined_heatmap <- heatmap + heatmap2
-combined_heatmap
-ggsave(filename = "05_heatmap_1.png", plot = heatmap, device = "png", path = "../results")
-ggsave(filename = "05_heatmap_2.png", plot = heatmap2, device = "png", path = "../results")
-ggsave(filename = "05_combined_heatmap.png", plot = combined_heatmap, device = "png", path = "../results")
+# Making a heat map for the 'bottom' 25 genes (= with higher expression in ALL)
+heatmap_ALL <- heatmap_from_data(cancer_data_estimates,
+                                 cancer_data_rescaled,
+                                 top = FALSE)
 
+# Saving plots
+ggsave(filename = "05_heatmap_AML.png",
+       plot = heatmap_AML,
+       device = "png",
+       path = "../results")
 
+ggsave(filename = "05_heatmap_ALL.png",
+       plot = heatmap_ALL,
+       device = "png",
+       path = "../results")
+
+heatmap_AML
+heatmap_ALL
 ```
