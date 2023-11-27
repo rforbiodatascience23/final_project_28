@@ -13,6 +13,7 @@ editor:
 
 ```{r}
 library(tidyverse)
+library(quarto)
 ```
 
 ## Source of data
