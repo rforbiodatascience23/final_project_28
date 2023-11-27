@@ -20,41 +20,101 @@ library("ggplot2")
 ## Loading the data
 
 ```{r}
-cancer_data <- read_csv("../data/03_expression_tidy.csv")
 cancer_data_scaled <- read_csv("../data/03_expression_scaled.csv")
 ```
 
-## Computing summary statistics
+## Performing a PCA analysis
 
 ```{r}
-summary_stats <- cancer_data |>
-  group_by(cancer) |>
-  summarise_all(list(mean = mean,
-                     sd = sd,
-                     median = median))
-```
-
-```{r}
-# Perform PCA
 pca_fit <- cancer_data_scaled |>
   select(!c(1:3)) |>  # Retain only numeric columns
   prcomp(scale = FALSE)  # Perform PCA on scaled data
 
-# Plot the data in PC coordinates
-pca_plot <- pca_fit |>
-  augment(cancer_data_scaled) |>
-  ggplot(aes(.fittedPC1, .fittedPC2, color = cancer, size = .fittedPC3)) + 
+pca_data <- pca_fit |>
+  augment(cancer_data_scaled)
+
+# Freeing memory
+remove(cancer_data_scaled)
+
+# Plotting the data in PC coordinates
+pca_plot <- pca_data |> 
+  ggplot(
+    aes(x = .fittedPC1,
+        y = .fittedPC2,
+        color = cancer,
+        size = .fittedPC3))
+    ) + 
   geom_point(alpha = 0.5) +
   scale_size(range = c(1, 8)) +
-  scale_color_manual(
-    values = c("ALL" = "red", "AML" = "blue")
-  ) +
-  labs(title = "PCA of Gene Expression by Cancer Type", 
-       x = "Principal Component 1", y = "Principal Component 2",
-       color = "Cancer Type") +
-  theme(plot.title = element_text(hjust = 0.5))
+  scale_color_manual(values = c("ALL" = "#5855da",
+                                "AML" = "#ff6500")) +
+  labs(
+    title = "PCA of gene expression by cancer type", 
+    x = "Principal component 1",
+    y = "Principal component 2",
+    color = "Cancer type"
+    ) +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+    )
 
-# Display the plot
+ggsave(filename = "05_pca.png",
+       plot = pca_plot,
+       device = "png",
+       path = "../results")
+
 pca_plot
-ggsave(filename = "05_pca.png", plot = pca_plot, device = "png", path = "../results")
+```
+
+## Exploring variance explained by PCs and eigenvalues
+
+```{r}
+variance_95 <- pca_fit |> 
+  tidy(matrix = "eigenvalues") |> 
+  arrange() |> 
+  filter(cumulative < 0.95)
+```
+
+```{r}
+# Bar plot for 95% PCs
+pc_barplot <- variance_95 |> 
+  ggplot(aes(x = PC,
+             y = percent,
+             fill = percent)) +
+  geom_col(alpha = 0.8) +
+  scale_fill_viridis_c(guide = NULL) +
+  scale_x_continuous() +
+  scale_y_continuous(
+    labels = scales::percent_format()) +
+  labs(
+    title = "Contrtibutions of PCs to explained variance", 
+    x = "PCs",
+    y = "Percentage of variance explained"
+    )
+  
+ggsave(filename = "05_pc_barplot.png",
+       plot = pc_barplot,
+       device = "png",
+       path = "../results")
+
+pc_barplot
+```
+
+```{r}
+# Bar plot for first two PCs
+first_two_pc <- variance_95 |> 
+  filter(PC < 3) 
+first_two_pc |> 
+  ggplot(aes(x = PC, y = percent)) +
+  geom_col(fill = "#56B4E9",
+           alpha = 0.8) +
+  scale_x_discrete(limits = c("1", "2")) + 
+  scale_y_continuous() +
+  labs(
+    title = "Percentage contribution to variance for the first two PCs", 
+    x = "PCs",
+    y = "Percentage of variance")
+
+# Freeing memory
+remove(pca_data, pca_fit)
 ```
