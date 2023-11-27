@@ -28,14 +28,14 @@ heatmap_from_data <- function(estimates,
   #'               in AML than in ALL
 
   if (isTRUE(top)) {
-    sig_list <- estimates_df |>
+    sig_list <- estimates |>
       filter(is_significant == "yes") |>
       slice_max(estimate, n = 25) |>
       select(gene) |>
       pull() |>
       as.character()
   } else {
-    sig_list <- estimates_df |>
+    sig_list <- estimates |>
       filter(is_significant == "yes") |>
       slice_min(estimate, n = 25) |>
       select(gene) |>
@@ -43,7 +43,7 @@ heatmap_from_data <- function(estimates,
       as.character()
   }
   
-  cancer_data_rescaled_sig <- tidy_data_df |> 
+  cancer_data_rescaled_sig <- tidy_data |> 
     select(patient_id,
            cancer,
            all_of(sig_list)) |>
