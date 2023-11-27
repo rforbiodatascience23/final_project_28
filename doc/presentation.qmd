@@ -63,18 +63,17 @@ format:
 :::
 :::
 
-<<<<<<< HEAD
+
 ::: {.column width="60%"}
 ::: {.r-stack}
 ![](../results/05_pc_barplot.png){.fragment .fade-in-then-out width="900" height="550"}
 
 ![](../results/05_pca.png){.fragment .fade-in-then-out}
-
+:::
+:::
 
 =======
-::: r-stack
+::: {.r-stack}
 ![](../results/04_mean_expression_hist_general.png)
->>>>>>> 15e19cc3000993f0ed292395c09c7d599bf54c62
 :::
-:::
-:::
+
