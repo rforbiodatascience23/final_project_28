@@ -9,6 +9,7 @@ format:
 ---
 
 ### Introduction
+::: columns
 ::: {.column width="50%"}
 - Gene expression dataset (Golub et al.)
 - Acute myeloid leukemia (AML)
@@ -23,7 +24,7 @@ format:
 
 :::
 :::
-
+:::
 ---
 
 ### Materials and Methods
@@ -37,7 +38,7 @@ format:
 ---
 
 
-### Results - Differential expression heatmap {.smaller}
+#### Results - Differential expression heatmap {.smaller}
 
 ::: columns
 ::: {.column width="30%"}
@@ -51,10 +52,10 @@ format:
 
 ::: {.column width="70%"}
 ::: {.r-stack}
-![](../results/05_heatmap_1.png){.fragment .fade-in-then-out}
+![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"}
 
 
-![](../results/05_heatmap_2.png){.fragment .fade-in-then-out}
+![](../results/05_heatmap_ALL.png){.fragment .fade-in-then-out height="600"}
 :::
 :::
 :::
