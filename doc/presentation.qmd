@@ -174,12 +174,10 @@ tidy_data |> sample_n(5) |> select(1:7)
 
 ### Discussion
 
--   Original study was designed for machine learning
+-   Same dataset different aim
 
--   We tried to compare the expression levels for different cancer types
+-   Comparative analysis looks promising for classification
 
--   Heatmap and 3D-PCA analysis let us to make a classification
+-   Many of the genes looks meaningless
 
--   The dataset includes too many genes which is good for machine learning
-
--   However, for us less genes were enough come up with a meaningful result\
+-   Complexity is high enough to use Machine Learning
