@@ -94,6 +94,14 @@ tidy_data |> sample_n(5) |> select(1:8)
 ```
 :::
 
+<<<<<<< HEAD
+|                                                                                                        |
+|-----|
+| \### Results - Data overview ::: columns ::: {.column width="30%"}                                     |
+| :::                                                                                                    |
+| ::: {.column width="70%"} ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"} |
+| ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"} ::: :::                   |
+=======
 
 ---
 
@@ -121,6 +129,7 @@ tidy_data |> sample_n(5) |> select(1:8)
 :::
 
 ------------------------------------------------------------------------
+>>>>>>> 3750b0c13e91e5deccd650aefd8a96e2031810a8
 
 #### Results - Differential expression heatmap {.smaller}
 
@@ -167,3 +176,15 @@ tidy_data |> sample_n(5) |> select(1:8)
 :::
 
 ------------------------------------------------------------------------
+
+### Discussion
+
+-   Original study was designed for machine learning
+
+-   We tried to compare the expression levels for different cancer types
+
+-   Heatmap and 3D-PCA analysis let us to make a classification
+
+-   The dataset includes too many genes which is good for machine learning
+
+-   However, for us less genes were enough come up with a meaningful result\
