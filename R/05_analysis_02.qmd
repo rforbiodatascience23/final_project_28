@@ -51,7 +51,6 @@ pca_plot <- pca_fit |>
   labs(title = "PCA of Gene Expression by Cancer Type", 
        x = "Principal Component 1", y = "Principal Component 2",
        color = "Cancer Type") +
-  theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 
 # Display the plot

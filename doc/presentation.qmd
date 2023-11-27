@@ -38,18 +38,33 @@ format:
 
 ::: {.column width="70%"}
 ::: {.r-stack}
-![](../results/05_heatmap_1.png){.fragment .fade-out}
+![](../results/05_heatmap_1.png){.fragment .fade-in-then-out}
 
-![](../results/05_heatmap_2.png){.fragment}
+![](../results/05_heatmap_2.png){.fragment .fade-in-then-out}
 :::
 :::
 :::
 
 ---
 
-### PCA
+### Results - PCA {.smaller}
+::: columns
+::: {.column width="40%"}
+::: {.r-fit-text}
+- 59 PCs explain 95% of variance in the data, top 2 - 26%
+- PCA data points stratified by cancer type.
+- PC1 - AML points spread out, ALL points more clustered
+- PC2 - ALL points spread out, AML points more clustered.
+:::
+:::
 
+::: {.column width="60%"}
 ::: {.r-stack}
-![](../results/04_mean_expression_hist_general.png)
+![](../results/05_pc_barplot.png){.fragment .fade-in-then-out width="900" height="550"}
 
+![](../results/05_pca.png){.fragment .fade-in-then-out}
+
+
+:::
+:::
 :::
