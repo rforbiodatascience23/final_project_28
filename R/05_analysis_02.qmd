@@ -87,7 +87,7 @@ pc_barplot <- variance_95 |>
   scale_y_continuous(
     labels = scales::percent_format()) +
   labs(
-    title = "Contrtibutions of PCs to explained variance", 
+    title = "Contributions of PCs to explained variance", 
     x = "PCs",
     y = "Percentage of variance explained"
     )

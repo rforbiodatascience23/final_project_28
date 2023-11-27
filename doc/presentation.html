@@ -10,7 +10,7 @@
 <link href="presentation_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.3.433">
 
-  <meta name="author" content="Group 28">
+  <meta name="author" content="Karolina, Jiawen, Martynas, Taner, Attila">
   <title>R4BDS Final Project</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -326,11 +326,12 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">R4BDS Final Project</h1>
+  <p class="subtitle">Group 28</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Group 28 
+Karolina, Jiawen, Martynas, Taner, Attila 
 </div>
 </div>
 </div>
@@ -345,12 +346,12 @@ Group 28
 <li>Gene expression dataset (Golub et al.)</li>
 <li>Acute myeloid leukemia (AML)</li>
 <li>Acute lymphoblastic leukemia (ALL)</li>
-<li>Original experiment aimed for Machine Learning approach</li>
-<li>Aim: Compare the two groups</li>
+<li>Original experiment aimed for Machine Learning</li>
+<li>Our aim: Compare the two groups</li>
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="r-stack">
-<p><img data-src="../results/99_leukemia.jpg"></p>
+<p><img data-src="../results/Leukemia.jpg"></p>
 </div>
 </div>
 </div>
@@ -369,7 +370,6 @@ Group 28
 <li>72 patients</li>
 <li>7129 genes</li>
 <li>Combined training and test datasets</li>
-<li>Normalization</li>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
@@ -392,7 +392,7 @@ Group 28
 
 <h3 id="materials-and-methods-1">Materials and Methods</h3>
 <div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Steps</a></li><li><a href="#tabset-1-2">Raw data 1</a></li><li><a href="#tabset-1-3">Raw data 2</a></li><li><a href="#tabset-1-4">Tidy data</a></li><li><a href="#tabset-1-5">Normal data</a></li><li><a href="#tabset-1-6">Scaled data</a></li></ul>
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Steps</a></li><li><a href="#tabset-1-2">Raw data 1</a></li><li><a href="#tabset-1-3">Raw data 2</a></li><li><a href="#tabset-1-4">Tidy data</a></li><li><a href="#tabset-1-5">Original data</a></li><li><a href="#tabset-1-6">Scaled data</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1">
 <p>1. Merging<br>
@@ -459,10 +459,10 @@ Group 28
 <div class="column" style="width:45%;">
 <ul>
 <li>47 ALL vs 25 AML</li>
-<li>Most gene expression distributed from -500 to 1000</li>
-<li>Distribution appears to follow normal distribution</li>
+<li>Most gene expression means distributed from -500 to 1000</li>
+<li>Normal distribution</li>
 </ul>
-</div><div class="column" style="width:55%;">
+</div><div class="column">
 <div class="r-stack">
 <p><img data-src="../results/04_patients_per_cancer.png" class="fragment fade-in-then-out" height="600"></p>
 <p><img data-src="../results/04_mean_expression_hist_general.png" class="fragment fade-in-then-out" height="600"></p>
@@ -480,15 +480,32 @@ Group 28
 <ul>
 <li>Linear modelling applied to find change in expression between ALL (0) and AML (1)</li>
 <li>Using q-value &lt; 0.05, significantly differentially expressed genes were filtered</li>
-<li>50 gene names were filtered based on highest and lowest estimated expression change&nbsp;</li>
+<li>50 gene names were filtered based on highest and lowest estimated expression change<br>
+</li>
 <li>Heatmap shows normalized expression differences</li>
 </ul>
 </div>
 </div><div class="column" style="width:70%;">
-<div class="r-stack">
-<p><img data-src="../results/05_heatmap_AML.png" class="fragment fade-in-then-out" height="600"></p>
-<p><img data-src="../results/05_heatmap_ALL.png" class="fragment fade-in-then-out" height="600"></p>
+<p><img data-src="../results/05_heatmap_AML.png" height="600"></p>
 </div>
+</div>
+</section>
+<section class="slide level2">
+
+<h4 class="smaller" id="results-differential-expression-heatmap-1">Results – Differential expression heatmap</h4>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="r-fit-text">
+<ul>
+<li>Linear modelling applied to find change in expression between ALL (0) and AML (1)</li>
+<li>Using q-value &lt; 0.05, significantly differentially expressed genes were filtered</li>
+<li>50 gene names were filtered based on highest and lowest estimated expression change<br>
+</li>
+<li>Heatmap shows normalized expression differences</li>
+</ul>
+</div>
+</div><div class="column" style="width:70%;">
+<p><img data-src="../results/05_heatmap_ALL.png" height="600"></p>
 </div>
 </div>
 </section>
@@ -500,16 +517,31 @@ Group 28
 <div class="r-fit-text">
 <ul>
 <li>59 PCs explain 95% of variance in the data. Top 2 - 26%</li>
-<li>PCA data points stratified by cancer type.</li>
+<li>PCA data points stratified by cancer type</li>
 <li>PC1 - AML points spread out, ALL points more clustered</li>
-<li>PC2 - ALL points spread out, AML points more clustered.</li>
+<li>PC2 - ALL points spread out, AML points more clustered</li>
 </ul>
 </div>
 </div><div class="column" style="width:60%;">
-<div class="r-stack">
-<p><img data-src="../results/05_pc_barplot.png" class="fragment fade-in-then-out" width="900" height="550"></p>
-<p><img data-src="../results/05_pca.png" class="fragment fade-in-then-out"></p>
+<p><img data-src="../results/05_pc_barplot.png" width="900" height="550"></p>
 </div>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 class="smaller" id="results-pca-1">Results – PCA</h3>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="r-fit-text">
+<ul>
+<li>59 PCs explain 95% of variance in the data. Top 2 - 26%</li>
+<li>PCA data points stratified by cancer type</li>
+<li>PC1 - AML points spread out, ALL points more clustered</li>
+<li>PC2 - ALL points spread out, AML points more clustered</li>
+</ul>
+</div>
+</div><div class="column" style="width:60%;">
+<p><img data-src="../results/05_pca.png" width="900" height="550"></p>
 </div>
 </div>
 </section>
@@ -517,12 +549,10 @@ Group 28
 
 <h3 id="discussion">Discussion</h3>
 <ul>
-<li><p>Original study was designed for machine learning</p></li>
-<li><p>We tried to compare the expression levels for different cancer types</p></li>
-<li><p>Heatmap and 3D-PCA analysis let us to make a classification</p></li>
-<li><p>The dataset includes too many genes which is good for machine learning</p></li>
-<li><p>However, for us less genes were enough come up with a meaningful result<br>
-</p></li>
+<li><p>Same dataset, different aim</p></li>
+<li><p>Comparative analysis looks promising for classification</p></li>
+<li><p>Many of the genes look meaningless</p></li>
+<li><p>Complexity is high enough to use Machine Learning</p></li>
 </ul>
 <div class="footer footer-default">
 
