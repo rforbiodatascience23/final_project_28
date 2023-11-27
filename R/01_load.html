@@ -20,6 +20,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -63,6 +126,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="loading-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="loading-libraries">Loading libraries</h2>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.1.2     ✔ readr     2.1.4
@@ -75,6 +139,7 @@ ul.task-list li input[type="checkbox"] {
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quarto)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="source-of-data" class="level2">
@@ -94,6 +159,8 @@ ul.task-list li input[type="checkbox"] {
 <section id="loading-data" class="level2">
 <h2 class="anchored" data-anchor-id="loading-data">Loading data</h2>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reading each of the 3 data files</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>patient_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../_raw/actual.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 72 Columns: 2
 ── Column specification ────────────────────────────────────────────────────────
@@ -102,32 +169,131 @@ chr (1): cancer
 dbl (1): patient
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-New names:
-Rows: 7129 Columns: 70
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (36): Gene Description, Gene Accession Number, call...4, call...6, call....
-dbl (34): 39, 40, 42, 47, 48, 49, 41, 43, 44, 45, 46, 70, 71, 72, 68, 69, 67...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-New names:
-Rows: 7129 Columns: 78
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (40): Gene Description, Gene Accession Number, call...4, call...6, call....
-dbl (38): 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>expression_indep <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../_raw/data_set_ALL_AML_independent.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>New names:
+Rows: 7129 Columns: 70
+── Column specification
+──────────────────────────────────────────────────────── Delimiter: "," chr
+(36): Gene Description, Gene Accession Number, call...4, call...6, call.... dbl
+(34): 39, 40, 42, 47, 48, 49, 41, 43, 44, 45, 46, 70, 71, 72, 68, 69, 67...
+ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
+Specify the column types or set `show_col_types = FALSE` to quiet this message.
+• `call` -&gt; `call...4`
+• `call` -&gt; `call...6`
+• `call` -&gt; `call...8`
+• `call` -&gt; `call...10`
+• `call` -&gt; `call...12`
+• `call` -&gt; `call...14`
+• `call` -&gt; `call...16`
+• `call` -&gt; `call...18`
+• `call` -&gt; `call...20`
+• `call` -&gt; `call...22`
+• `call` -&gt; `call...24`
+• `call` -&gt; `call...26`
+• `call` -&gt; `call...28`
+• `call` -&gt; `call...30`
+• `call` -&gt; `call...32`
+• `call` -&gt; `call...34`
+• `call` -&gt; `call...36`
+• `call` -&gt; `call...38`
+• `call` -&gt; `call...40`
+• `call` -&gt; `call...42`
+• `call` -&gt; `call...44`
+• `call` -&gt; `call...46`
+• `call` -&gt; `call...48`
+• `call` -&gt; `call...50`
+• `call` -&gt; `call...52`
+• `call` -&gt; `call...54`
+• `call` -&gt; `call...56`
+• `call` -&gt; `call...58`
+• `call` -&gt; `call...60`
+• `call` -&gt; `call...62`
+• `call` -&gt; `call...64`
+• `call` -&gt; `call...66`
+• `call` -&gt; `call...68`
+• `call` -&gt; `call...70`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>expression_train <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../_raw/data_set_ALL_AML_train.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>New names:
+Rows: 7129 Columns: 78
+── Column specification
+──────────────────────────────────────────────────────── Delimiter: "," chr
+(40): Gene Description, Gene Accession Number, call...4, call...6, call.... dbl
+(38): 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,...
+ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
+Specify the column types or set `show_col_types = FALSE` to quiet this message.
+• `call` -&gt; `call...4`
+• `call` -&gt; `call...6`
+• `call` -&gt; `call...8`
+• `call` -&gt; `call...10`
+• `call` -&gt; `call...12`
+• `call` -&gt; `call...14`
+• `call` -&gt; `call...16`
+• `call` -&gt; `call...18`
+• `call` -&gt; `call...20`
+• `call` -&gt; `call...22`
+• `call` -&gt; `call...24`
+• `call` -&gt; `call...26`
+• `call` -&gt; `call...28`
+• `call` -&gt; `call...30`
+• `call` -&gt; `call...32`
+• `call` -&gt; `call...34`
+• `call` -&gt; `call...36`
+• `call` -&gt; `call...38`
+• `call` -&gt; `call...40`
+• `call` -&gt; `call...42`
+• `call` -&gt; `call...44`
+• `call` -&gt; `call...46`
+• `call` -&gt; `call...48`
+• `call` -&gt; `call...50`
+• `call` -&gt; `call...52`
+• `call` -&gt; `call...54`
+• `call` -&gt; `call...56`
+• `call` -&gt; `call...58`
+• `call` -&gt; `call...60`
+• `call` -&gt; `call...62`
+• `call` -&gt; `call...64`
+• `call` -&gt; `call...66`
+• `call` -&gt; `call...68`
+• `call` -&gt; `call...70`
+• `call` -&gt; `call...72`
+• `call` -&gt; `call...74`
+• `call` -&gt; `call...76`
+• `call` -&gt; `call...78`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combining the 2 tibbles with gene expression data</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>expression <span class="ot">&lt;-</span> <span class="fu">merge</span>(<span class="at">x =</span> expression_indep,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">y =</span> expression_train,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">by.x =</span> <span class="fu">c</span>(<span class="st">"Gene Description"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"Gene Accession Number"</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">by.y =</span> <span class="fu">c</span>(<span class="st">"Gene Description"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"Gene Accession Number"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="writing-combined-data" class="level2">
 <h2 class="anchored" data-anchor-id="writing-combined-data">Writing combined data</h2>
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(expression,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">"../data/01_expression_data.csv"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">row.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(patient_data,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>          <span class="st">"../data/01_patient_data.csv"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">row.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Removing objects to free memory</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(expression_indep,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>       expression_train,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>       expression,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>       patient_data</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>       )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
