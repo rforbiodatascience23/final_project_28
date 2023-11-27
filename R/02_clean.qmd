@@ -12,14 +12,16 @@ editor:
 ## Loading libraries
 
 ```{r}
-#| eval: false
-library(tidyverse)
+library("tidyverse")
+library("dplyr")
+library("broom")
+
 ```
 
 ## Loading and cleaning data
 
 ```{r}
-expression_data <- read_csv("../data/01_expression_data.csv")
+expression_data <- read.csv("../data/01_expression_data.csv")
 
 # Removing gene "call" columns
 expression_data <- expression_data |>
@@ -27,8 +29,8 @@ expression_data <- expression_data |>
          )
 # Cleaning column names
 expression_data <- expression_data |>
-  rename(gene_description = "Gene Description",
-         gene_accession_number = "Gene Accession Number"
+  rename(gene_description = "Gene.Description",
+         gene_accession_number = "Gene.Accession.Number"
          )
 ```
 
