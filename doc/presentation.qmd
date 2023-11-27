@@ -9,11 +9,13 @@ format:
 ---
 
 ### Introduction
+::: {.column width="50%"}
 - Gene expression dataset (Golub et al.)
 - Acute myeloid leukemia (AML)
 - Acute lymphoblastic leukemia (ALL)
 - Original experiment aimed for Machine Learning approach
 - Aim: Compare the two groups
+:::
 
 ::: {.column width="50%"}
 ::: {.r-stack}
@@ -78,5 +80,5 @@ format:
 ![](../results/05_pca.png){.fragment .fade-in-then-out}
 :::
 :::
-
+:::
 ---
