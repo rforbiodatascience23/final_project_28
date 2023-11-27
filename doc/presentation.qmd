@@ -21,9 +21,8 @@ format:
 
 :::
 :::
-=======
 
-------------------------------------------------------------------------
+---
 
 ### Materials and Methods
 - 72 patient
@@ -31,15 +30,10 @@ format:
 - Combined training and test dataset
 - Normalization
 
-=======
 
-------------------------------------------------------------------------
 
-### Results - Theoretical plot
+---
 
--   sample text
-
-------------------------------------------------------------------------
 
 ### Results - Differential expression heatmap {.smaller}
 
@@ -63,7 +57,7 @@ format:
 :::
 :::
 
-------------------------------------------------------------------------
+---
 
 ### Results - PCA {.smaller}
 ::: columns
@@ -85,8 +79,4 @@ format:
 :::
 :::
 
-=======
-::: {.r-stack}
-![](../results/04_mean_expression_hist_general.png)
-:::
-
+---
