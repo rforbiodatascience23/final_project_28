@@ -408,7 +408,13 @@ Group 28
 <div id="tabset-1-2">
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>  Gene.Accession.Number  X1 call  X2 call.1  X3 call.2
+<pre><code>                                          Gene.Description
+1                                                 PBI gene
+2                   Metabotropic glutamate receptor 8 mRNA
+3 PPARA Peroxisome proliferative activated receptor; alpha
+4            Fetus brain mRNA for membrane glycoprotein M6
+5                                            KIAA0067 gene
+  Gene.Accession.Number  X1 call  X2 call.1  X3 call.2
 1             D89501_at  41    A -49      A 140      A
 2           AC000099_at 245    A 125      A 124      P
 3             L02932_at  29    A  82      A 199      A
@@ -437,31 +443,40 @@ Group 28
 2         42    ALL                  0       658      -110       102      -172
 3         37    AML                  1        43      -264         2      -330
 4         21    ALL                  0        54      -144      1030      -157
-5         25    ALL                  0       -77       -96       -15      -215</code></pre>
+5         25    ALL                  0       -77       -96       -15      -215
+  U14575_at
+1       483
+2       272
+3       488
+4       394
+5       210</code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<table style="width:6%;">
-<colgroup>
-<col style="width: 5%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td>### Results - Data overview ::: columns ::: {.column width=“30%”}</td>
-</tr>
-<tr class="even">
-<td>:::</td>
-</tr>
-<tr class="odd">
-<td>::: {.column width=“70%”} <img data-src="../results/05_heatmap_AML.png" class="fragment fade-in-then-out" height="600"></td>
-</tr>
-<tr class="even">
-<td><img data-src="../results/05_heatmap_AML.png" class="fragment fade-in-then-out" height="600"> ::: :::</td>
-</tr>
-</tbody>
-</table>
+</section>
+<section class="slide level2">
+
+<h3 class="smaller" id="results---data-overview">Results - Data overview</h3>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li>47 ALL vs 25 AML</li>
+<li>Most gene expression distributed from -500 to 1000</li>
+<li>Distribution appears to follow normal distribution</li>
+</ul>
+</div><div class="column">
+<div class="r-stack">
+<p><img data-src="../results/04_patients_per_cancer.png" class="fragment fade-in-then-out" height="600"></p>
+<p><img data-src="../results/04_mean_expression_hist_general.png" class="fragment fade-in-then-out" height="600"></p>
+<p><img data-src="../results/04_mean_expression_hist_zoom.png" class="fragment fade-in-then-out" height="600"></p>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
 <h4 class="smaller" id="results---differential-expression-heatmap">Results - Differential expression heatmap</h4>
 <div class="columns">
 <div class="column" style="width:30%;">
