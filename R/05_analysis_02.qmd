@@ -1,3 +1,15 @@
+---
+title: "05. Analysing expression data: PCA"
+execute: 
+  echo: false
+  eval: true
+format: html
+editor: 
+  markdown: 
+    wrap: 80
+---
+
+## Loading libraries
 
 ```{r}
 library("tidyverse")
@@ -5,33 +17,21 @@ library("broom")
 library("ggplot2")
 ```
 
+## Loading the data
+
 ```{r}
 cancer_data <- read_csv("../data/03_expression_tidy.csv")
 cancer_data_scaled <- read_csv("../data/03_expression_scaled.csv")
 ```
 
+## Computing summary statistics
+
 ```{r}
-# Group by 'cancer' and compute summary statistics
 summary_stats <- cancer_data |>
   group_by(cancer) |>
-  summarise_all(list(mean = mean, sd = sd, median = median))
-```
-
-```{r}
-cancer_type_distribution <- ggplot(cancer_data, aes(x = factor(cancer_type_number))) +
-  geom_bar() +
-  labs(title = "Distribution of Cancer Type Numbers", x = "Cancer Type Number", y = "Count") +
-  theme_minimal()
-cancer_type_distribution
-ggsave(filename = "05_cancer_type_dist.png", plot = cancer_type_distribution, device = "png", path = "../results")
-```
-
-```{r}
-ggplot(cancer_data, aes(x = cancer, y = D49824_s_at)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Distribution of Gene Expression (D49824_s_at)", x = "Cancer Type", y = "Expression") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+  summarise_all(list(mean = mean,
+                     sd = sd,
+                     median = median))
 ```
 
 ```{r}

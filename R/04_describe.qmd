@@ -80,6 +80,27 @@ expression_long_with_cancer <- merge(x = expression_long,
 
 ## Exploratory data analysis
 
+### Cancer sample sizes
+
+```{r}
+n_patients <- patient_data |> 
+  ggplot(aes(x = cancer)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(
+    title = "Sample sizes per cancer type",
+    x = "Cancer type",
+    y = "Count"
+    )
+
+ggsave(filename = "04_patients_per_cancer.png",
+       plot = n_patients,
+       device = "png",
+       path = "../results")
+
+n_patients
+```
+
 ### Distributions of mean expressions
 
 ```{r}
