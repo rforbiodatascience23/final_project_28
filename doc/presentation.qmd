@@ -51,7 +51,7 @@ format:
 
 ------------------------------------------------------------------------
 
-### Discussion
+### PCA
 
 ::: r-stack
 ![](../results/04_mean_expression_hist_general.png)
