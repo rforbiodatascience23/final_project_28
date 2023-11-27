@@ -43,8 +43,9 @@ pca_fit <- cancer_data_scaled |>
 # Plot the data in PC coordinates
 pca_plot <- pca_fit |>
   augment(cancer_data_scaled) |>
-  ggplot(aes(.fittedPC1, .fittedPC2, color = cancer)) + 
-  geom_point(size = 1.5) +
+  ggplot(aes(.fittedPC1, .fittedPC2, color = cancer, size = .fittedPC3)) + 
+  geom_point(alpha = 0.5) +
+  scale_size(range = c(1, 8)) +
   scale_color_manual(
     values = c("ALL" = "red", "AML" = "blue")
   ) +

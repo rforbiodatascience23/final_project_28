@@ -58,7 +58,7 @@ boxplot_scaled
 
 ```{r}
 # Putting gene accession numbers in one column
-cancer_data_long <- cancer_data_rescaled |>
+cancer_data_long <- cancer_data_scaled |>
   select(!c(cancer,
             patient_id)) |> 
   pivot_longer(cols = -cancer_type_number,
@@ -159,12 +159,12 @@ forest_plot
 ```{r}
 # Making a heat map for the 'top' 25 genes (= with higher expression in AML)
 heatmap_AML <- heatmap_from_data(cancer_data_estimates,
-                                 cancer_data_rescaled,
+                                 cancer_data_scaled,
                                  top = TRUE)
 
 # Making a heat map for the 'bottom' 25 genes (= with higher expression in ALL)
 heatmap_ALL <- heatmap_from_data(cancer_data_estimates,
-                                 cancer_data_rescaled,
+                                 cancer_data_scaled,
                                  top = FALSE)
 
 # Saving plots
