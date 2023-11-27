@@ -1,13 +1,32 @@
+---
+title: "99. Loading all custom functions"
+execute: 
+  echo: false
+  eval: true
+format: html
+editor: 
+  markdown: 
+    wrap: 80
+---
+
 ```{r}
 library(tidyverse)
 ```
 
+## Heat map function
+
 ```{r}
-# heatmap function
-# takes the estimates dataframe and scaled tidy dataframe
-# 'top' argument determines whether slice_min or slice_max is used
-# to take 25 most differently expressed genes between the two cancer types in favor of one of the types
-heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
+heatmap_from_data <- function(estimates,
+                              tidy_data,
+                              top = TRUE) {
+  
+  #' ARGUMENTS:
+  #'  estimates    tibble; contains slope values from linear models
+  #'  tidy_data    tibble; tidy linear model object
+  #'  top          bool; if TRUE, slice_max is used, else slice_max is used;
+  #'               "top = TRUE" means taking genes whose expression is higher
+  #'               in AML than in ALL
+
   if (isTRUE(top)) {
     sig_list <- estimates_df |>
       filter(is_significant == "yes") |>
@@ -25,25 +44,40 @@ heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
   }
   
   cancer_data_rescaled_sig <- tidy_data_df |> 
-    select(patient_id, cancer, all_of(sig_list)) |>
+    select(patient_id,
+           cancer,
+           all_of(sig_list)) |>
     arrange(cancer)
-  cancer_data_rescaled_sig$patient_id <- factor(cancer_data_rescaled_sig$patient_id, 
-                                          levels = cancer_data_rescaled_sig$patient_id)
+  
+  # Using '$' to fix the order of row in this column
+  cancer_data_rescaled_sig$patient_id <- factor(
+    cancer_data_rescaled_sig$patient_id, 
+    levels = cancer_data_rescaled_sig$patient_id
+    )
     
   heatmap <- cancer_data_rescaled_sig |>
-    pivot_longer(cols = -c(patient_id, cancer), names_to = "gene", values_to = "expr") |>
+    pivot_longer(cols = -c(patient_id, cancer),
+                 names_to = "gene",
+                 values_to = "expr") |>
     mutate(gene = str_extract(gene, "[A-Z, 0-9]+")) |>
-    ggplot(aes(x = gene, y = patient_id)) +
-    geom_tile(aes(fill=expr)) +
+    ggplot(aes(x = gene,
+               y = patient_id)) +
+    geom_tile(aes(fill = expr)) +
     scale_fill_viridis_c() +
-    labs(title = "Differential expression heatmap between AML and ALL",
-         x = "Gene ID",
-         y = element_blank()) +
-    theme(axis.text.x = element_text(angle=45, hjust = 1, size = 8),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          legend.position = "bottom",
-          plot.title = element_text(hjust = 0.5)) +
+    labs(
+      title = "Differential expression heatmap between AML and ALL",
+      x = "Gene ID",
+      y = element_blank()
+      ) +
+    theme(
+      axis.text.x = element_text(angle=45,
+                                 hjust = 1,
+                                 size = 8),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      legend.position = "bottom",
+      plot.title = element_text(hjust = 0.5)
+      ) +
     facet_grid(vars(cancer), space = "free_y", scales = "free_y")
 }
 ```
@@ -51,10 +85,13 @@ heatmap_from_data <- function(estimates_df, tidy_data_df, top = TRUE) {
 ## Labeller function for facets
 
 ```{r}
-# TODO: change labeller so it is not deprecated !!!
-
 facet_labeller <- function(variable, value) {
+  
+  #' "custom_labels" needs to be defined globally as a list:
+  #'    custom_labels = list("variable_name_in_tibble" = "desired_label", [...])
+
   custom_labels[value]
+  # TODO: change labeller so it is not deprecated !!!
 }
 ```
 
@@ -64,6 +101,14 @@ facet_labeller <- function(variable, value) {
 find_most_expressed <- function(data,
                                 n,
                                 reverse = FALSE) {
+  
+  #' ARGUMENTS:
+  #'  data      tibble; contains columns "patient_id", "gene_accession_number",
+  #'            "gene_description", "expression", "cancer"
+  #'  n         int; the number of genes to consider
+  #'  reverse   bool; if TRUE, n least expressed genes are selected, otherwise
+  #'            n most expressed are selected
+  
   # 'highest' expression based on mean per gene
   data_means <- data |> 
     group_by(gene_accession_number) |> 
