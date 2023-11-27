@@ -24,36 +24,44 @@ cancer_data <- read_csv("../data/03_expression_tidy.csv")
 cancer_data_scaled <- read_csv("../data/03_expression_scaled.csv")
 ```
 
-## Computing summary statistics
+## Performing a PCA analysis
 
 ```{r}
-summary_stats <- cancer_data |>
-  group_by(cancer) |>
-  summarise_all(list(mean = mean,
-                     sd = sd,
-                     median = median))
-```
-
-```{r}
-# Perform PCA
 pca_fit <- cancer_data_scaled |>
   select(!c(1:3)) |>  # Retain only numeric columns
   prcomp(scale = FALSE)  # Perform PCA on scaled data
 
-# Plot the data in PC coordinates
-pca_plot <- pca_fit |>
-  augment(cancer_data_scaled) |>
-  ggplot(aes(.fittedPC1, .fittedPC2, color = cancer)) + 
-  geom_point(size = 1.5) +
-  scale_color_manual(
-    values = c("ALL" = "red", "AML" = "blue")
-  ) +
-  labs(title = "PCA of Gene Expression by Cancer Type", 
-       x = "Principal Component 1", y = "Principal Component 2",
-       color = "Cancer Type") +
-  theme(plot.title = element_text(hjust = 0.5))
+pca_data <- pca_fit |>
+  augment(cancer_data_scaled)
 
-# Display the plot
+# Plotting the data in PC coordinates
+pca_plot <- pca_data |> 
+  ggplot(
+    aes(x = .fittedPC1,
+        y = .fittedPC2,
+        color = cancer)
+    ) + 
+  geom_point(size = 2) +
+  scale_color_viridis_d() +
+  labs(
+    title = "PCA of gene expression by cancer type", 
+    x = "Principal component 1",
+    y = "Principal component 2",
+    color = "Cancer type"
+    ) +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+    ) +
+  geom_point(
+    data = pca_data,
+    color = "black",
+    shape = "circle open",
+    size = 2)
+
+ggsave(filename = "05_pca.png",
+       plot = pca_plot,
+       device = "png",
+       path = "../results")
+
 pca_plot
-ggsave(filename = "05_pca.png", plot = pca_plot, device = "png", path = "../results")
 ```
