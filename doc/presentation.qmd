@@ -90,7 +90,7 @@ raw_data2 |> sample_n(5)
 ```{r}
 set.seed(420)
 tidy_data <- read.csv("../data/03_expression_tidy.csv")
-tidy_data |> sample_n(5) |> select(1:8)
+tidy_data |> sample_n(5) |> select(1:7)
 ```
 :::
 

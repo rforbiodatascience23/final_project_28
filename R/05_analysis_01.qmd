@@ -31,7 +31,18 @@ boxplot_unscaled <- cancer_data |>
                values_to = "expr") |>
   ggplot(aes(x = gene,
              y = expr)) +
-  geom_boxplot()
+  geom_boxplot() +
+  theme_light() +
+  labs(
+    x = "Gene ID",
+    y = "Expression",
+    title = "Expression distribution"
+  )
+
+ggsave(filename = "05_expressions_boxplot.png",
+       plot = boxplot_unscaled,
+       device = "png",
+       path = "../results")
 
 boxplot_unscaled
 ```
@@ -49,7 +60,18 @@ boxplot_scaled <- cancer_data_scaled |>
                values_to = "expr") |>
   ggplot(aes(x = gene,
              y = expr)) +
-  geom_boxplot()
+  geom_boxplot() +
+  theme_light() +
+  labs(
+    x = "Gene ID",
+    y = "Scaled expression",
+    title = "Scaled expression distribution"
+  )
+
+ggsave(filename = "05_scaled_expressions_boxplot.png",
+       plot = boxplot_scaled,
+       device = "png",
+       path = "../results")
 
 boxplot_scaled
 ```
