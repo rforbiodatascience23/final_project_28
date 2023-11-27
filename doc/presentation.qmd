@@ -1,5 +1,5 @@
 ---
-title: "Project title"
+title: "Leukemia Gene Expression Exploratory Analysis"
 author: "Group 28"
 format: 
   revealjs:
@@ -9,16 +9,29 @@ format:
 ---
 
 ### Introduction
+- Gene expression dataset (Golub et al.)
+- Acute myeloid leukemia (AML)
+- Acute lymphoblastic leukemia (ALL)
+- Original experiment aimed for Machine Learning approach
+- Aim: Compare the two groups
 
--   sample text
--   sample text
+::: {.column width="50%"}
+::: {.r-stack}
+![](../results/99_leukemia.jpg){fig-align="left"}
+
+:::
+:::
+=======
 
 ------------------------------------------------------------------------
 
 ### Materials and Methods
+- 72 patient
+- 7129 genes
+- Combined training and test dataset
+- Normalization
 
--   sample text
--   sample text
+=======
 
 ------------------------------------------------------------------------
 
