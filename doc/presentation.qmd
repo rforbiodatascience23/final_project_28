@@ -21,14 +21,14 @@ format:
 
 ::: {.column width="50%"}
 ::: r-stack
-![](../results/99_leukemia.jpg){fig-align="left"}
+![](../results/99_leukemia.jpg)
 :::
 :::
 :::
 
 ------------------------------------------------------------------------
 
-### Materials and Methods 1
+### Materials and Methods
 
 ::: container
 ::: container
@@ -57,7 +57,7 @@ In the project we used the *Gene expression dataset (Golub et al.)*
 
 ------------------------------------------------------------------------
 
-### Materials and Methods 2
+### Materials and Methods
 
 ::: panel-tabset
 #### Steps
@@ -101,11 +101,21 @@ tidy_data |> sample_n(5) |> select(1:7)
 ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"}
 ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"}
 :::
+#### Normal data
+
+![](../results/05_expressions_boxplot.png){.absolute top="250" left="225" height="450" width="600"}
+
+#### Scaled data
+
+![](../results/05_scaled_expressions_boxplot.png){.absolute top="250" left="225" height="450" width="600"}
+
 :::
 
 ---
 
 ### Results - Data overview  {.smaller}
+=======
+### Results -- Data overview {.smaller}
 
 ::: columns
 
@@ -129,9 +139,8 @@ tidy_data |> sample_n(5) |> select(1:7)
 :::
 
 ------------------------------------------------------------------------
->>>>>>> 3750b0c13e91e5deccd650aefd8a96e2031810a8
 
-#### Results - Differential expression heatmap {.smaller}
+#### Results -- Differential expression heatmap {.smaller}
 
 ::: columns
 ::: {.column width="30%"}
@@ -154,7 +163,7 @@ tidy_data |> sample_n(5) |> select(1:7)
 
 ------------------------------------------------------------------------
 
-### Results - PCA {.smaller}
+### Results -- PCA {.smaller}
 
 ::: columns
 ::: {.column width="40%"}
