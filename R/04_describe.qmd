@@ -84,14 +84,19 @@ expression_long_with_cancer <- merge(x = expression_long,
 
 ```{r}
 n_patients <- patient_data |> 
-  ggplot(aes(x = cancer)) +
-  geom_bar() +
+  ggplot(aes(x = cancer,
+             fill = cancer)) +
+  geom_bar(alpha = 0.7) +
+  scale_fill_viridis_d() +
   theme_minimal() +
   labs(
     title = "Sample sizes per cancer type",
     x = "Cancer type",
     y = "Count"
-    )
+    ) +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
 
 ggsave(filename = "04_patients_per_cancer.png",
        plot = n_patients,
