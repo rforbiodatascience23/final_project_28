@@ -93,14 +93,12 @@ n_patients <- patient_data |>
   geom_bar(alpha = 0.7) +
   scale_fill_viridis_d() +
   theme_light() +
+  theme(plot.title = element_text(hjust = 0.5))
   labs(
     title = "Sample sizes per cancer type",
     x = "Cancer type",
     y = "Count"
-    ) +
-  theme(
-    plot.title = element_text(hjust = 0.5)
-  )
+    )
 
 ggsave(filename = "04_patients_per_cancer.png",
        plot = n_patients,
