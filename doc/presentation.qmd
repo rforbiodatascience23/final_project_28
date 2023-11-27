@@ -94,14 +94,14 @@ tidy_data |> sample_n(5) |> select(1:8)
 ```
 :::
 
-<<<<<<< HEAD
-|                                                                                                        |
-|-----|
-| \### Results - Data overview ::: columns ::: {.column width="30%"}                                     |
-| :::                                                                                                    |
-| ::: {.column width="70%"} ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"} |
-| ![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"} ::: :::                   |
-=======
+                                                                                                 
+-----
+### Results - Data overview ::: columns ::: {.column width="30%"}                                  ::: columns                                                                                                
+::: {.column width="70%"}
+![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"}
+![](../results/05_heatmap_AML.png){.fragment .fade-in-then-out height="600"}
+:::
+:::
 
 ---
 
