@@ -21,7 +21,7 @@ format:
 
 ::: {.column width="50%"}
 ::: r-stack
-![](../results/99_leukemia.jpg)
+![](../results/Leukemia.jpg)
 :::
 :::
 :::
