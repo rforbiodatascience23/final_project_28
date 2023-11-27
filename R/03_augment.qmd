@@ -12,7 +12,6 @@ editor:
 ## Loading libraries
 
 ```{r}
-#| eval: false
 library(tidyverse)
 ```
 
