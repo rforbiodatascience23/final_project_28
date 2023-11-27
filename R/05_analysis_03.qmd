@@ -16,10 +16,6 @@ pca_fit <- cancer_data_scaled |>
   prcomp(scale = FALSE)  # Perform PCA on scaled data
 ```
 
-```{r}
-pca_fit |> 
-  tidy(matrix = "eigenvalues")
-```
 
 ```{r}
 variance_95 <- pca_fit |> 
