@@ -18,10 +18,12 @@ summary_stats <- cancer_data |>
 ```
 
 ```{r}
-ggplot(cancer_data, aes(x = factor(cancer_type_number))) +
+cancer_type_distribution <- ggplot(cancer_data, aes(x = factor(cancer_type_number))) +
   geom_bar() +
   labs(title = "Distribution of Cancer Type Numbers", x = "Cancer Type Number", y = "Count") +
   theme_minimal()
+cancer_type_distribution
+ggsave(filename = "05_cancer_type_dist.png", plot = cancer_type_distribution, device = "png", path = "../results")
 ```
 
 ```{r}
@@ -53,5 +55,6 @@ pca_plot <- pca_fit |>
   theme(plot.title = element_text(hjust = 0.5))
 
 # Display the plot
-print(pca_plot)
+pca_plot
+ggsave(filename = "05_pca.png", plot = pca_plot, device = "png", path = "../results")
 ```

@@ -104,13 +104,12 @@ mean_expression_hist_general <- mean_expression_hist +
              nrow = 2,
              labeller = facet_labeller)
 
-mean_expression_hist_general +
+mean_expression_hist_general <- mean_expression_hist_general +
   labs(
     title = "Distributions of mean gene expressions",
     x = "Mean gene expression (a.u.)",
     y = "Count"
   ) +
-  theme_minimal() +
   scale_fill_viridis_d(guide = "none") +
   theme(
     plot.title = element_text(size = 12,
@@ -127,12 +126,15 @@ mean_expression_hist_general +
                                 face = "bold"),
     axis.text.x = element_text(size = 11)
   )
+
+mean_expression_hist_general
+ggsave(filename = "04_mean_expression_hist_general.png", plot = mean_expression_hist_general, device = "png", path = "../results")
 ```
 
 ### Zooming in on around the MODE
 
 ```{r}
-mean_expression_hist +
+mean_expression_hist_zoom <- mean_expression_hist +
   geom_histogram(binwidth = 250,
                  alpha = 0.7) +
   coord_cartesian(xlim = c(-1000, 3000)) +
@@ -159,6 +161,9 @@ mean_expression_hist +
                                 face = "bold"),
     axis.text.x = element_text(size = 11)
   )
+
+mean_expression_hist_zoom
+ggsave(filename = "04_mean_expression_hist_zoom.png", plot = mean_expression_hist_zoom, device = "png", path = "../results")
 ```
 
 ### Zooming in on NEGATIVE means

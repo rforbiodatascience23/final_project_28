@@ -9,35 +9,39 @@ format:
 ---
 
 ### Introduction
-- sample text
-- sample text
 
----
+-   sample text
+-   sample text
+
+------------------------------------------------------------------------
 
 ### Materials and Methods
-- sample text
-- sample text
 
----
+-   sample text
+-   sample text
+
+------------------------------------------------------------------------
 
 ### Results - Theoretical plot
-- sample text
 
----
+-   sample text
+
+------------------------------------------------------------------------
 
 ### Results - Differential expression heatmap {.smaller}
+
 ::: columns
 ::: {.column width="30%"}
-::: {.r-fit-text}
-- Linear modelling applied to find change in expression between ALL (0) and AML (1)
-- Using q-value < 0.05, significantly differentially expressed genes were filtered
-- 50 gene names were filtered based on highest and lowest estimated expression change  
-- Heatmap shows normalized expression differences
+::: r-fit-text
+-   Linear modelling applied to find change in expression between ALL (0) and AML (1)
+-   Using q-value \< 0.05, significantly differentially expressed genes were filtered
+-   50 gene names were filtered based on highest and lowest estimated expression change\
+-   Heatmap shows normalized expression differences
 :::
 :::
 
 ::: {.column width="70%"}
-::: {.r-stack}
+::: r-stack
 ![](../results/05_heatmap_1.png){.fragment .fade-out}
 
 ![](../results/05_heatmap_2.png){.fragment}
@@ -45,12 +49,10 @@ format:
 :::
 :::
 
----
+------------------------------------------------------------------------
 
-### Discussion
+### PCA
 
-::: {.r-stack}
-![](../results/05_heatmap_1.png){.fragment}
-
-![](../results/05_heatmap_2.png){.fragment}
+::: r-stack
+![](../results/04_mean_expression_hist_general.png)
 :::
