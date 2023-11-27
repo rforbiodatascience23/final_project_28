@@ -1,5 +1,5 @@
 ---
-title: "Leukemia Gene Expression Exploratory Analysis"
+title: "R4BDS Final Project"
 author: "Group 28"
 format: 
   revealjs:
@@ -59,14 +59,34 @@ In the project we used the *Gene expression dataset (Golub et al.)*
 
 ### Materials and Methods 2
 
-::: columns
-::: {.column width="50%"}
+::: {.panel-tabset}
+#### Steps
 1\. Merging\
 2. Cleaning\
 3. Transforming\
 4. Augmenting\
 5. Analysis
-:::
+
+#### Raw data 1
+```{r}
+library("tidyverse")
+set.seed(420)
+raw_data <- read.csv("../_raw/data_set_ALL_AML_train.csv")
+raw_data |> sample_n(5) |> select(2:8)
+```
+#### Raw data 2
+```{r}
+set.seed(420)
+raw_data2 <- read.csv("../_raw/actual.csv")
+raw_data2 |> sample_n(5)
+```
+
+#### Tidy data
+```{r}
+set.seed(420)
+tidy_data <- read.csv("../data/03_expression_tidy.csv")
+tidy_data |> sample_n(5) |> select(1:7)
+```
 :::
 
 ------------------------------------------------------------------------
