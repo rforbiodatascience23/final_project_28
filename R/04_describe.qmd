@@ -269,7 +269,7 @@ mean_expression_hist +
   )
 ```
 
-## Finding highest and lowest expressed genes // TODO: make a function
+## Finding highest and lowest expressed genes
 
 ```{r}
 # Find 10 MOST expressed genes
@@ -292,7 +292,7 @@ lowest_10_genes_AML <- expression_long_with_cancer |>
                       reverse = TRUE)
 ```
 
-## Plotting distributions of 10 highest expressed genes // TODO: make a function
+## Plotting distributions of 10 highest expressed genes
 
 ```{r}
 #| label: highest-ridges

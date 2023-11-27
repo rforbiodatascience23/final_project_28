@@ -23,7 +23,7 @@ patient_data <- read_csv("../data/01_patient_data.csv")
 
 expression_clean <- read_csv("../data/02_expression_clean.csv")
 
-# adding numeric values for the cancer types 
+# Adding numeric values for the cancer types 
 patient_data <- patient_data |>
   mutate(
     cancer_type_number = case_when(
@@ -32,13 +32,13 @@ patient_data <- patient_data |>
     )
   ) 
 
-# merging expression data with patient data based on patient ID
+# Merging expression data with patient data based on patient ID
 expression_tidy <- merge(x = expression_clean,
                         y = patient_data,
                         by.x = "patient_id",
                         by.y = "patient")
 
-# sorting the expression tibble and re-arranging columns
+# Sorting the expression tibble and re-arranging columns
 expression_tidy <- expression_tidy |>
   select(patient_id,
          cancer,
@@ -49,29 +49,29 @@ expression_tidy <- expression_tidy |>
          ) |>
   arrange(patient_id)
 
-# writing to csv
+# Writing to csv
 write.csv(expression_tidy,
           "../data/03_expression_tidy.csv",
           row.names = FALSE
           )
 
-# removing objects to free memory
+# Removing objects to free memory
 remove(expression_clean, patient_data)
 ```
 
 ## Scaling (standardizing) expression data
 
 ```{r}
-# a function for standardizing gene expression values
+# A function for standardizing gene expression values
 expression_tidy_scaled <- expression_tidy |> 
     mutate(across(4:last_col(), ~as.numeric(scale(.))))
 
-# writing to csv
+# Writing to csv
 write.csv(expression_tidy_scaled,
           "../data/03_expression_scaled.csv",
           row.names = FALSE)
 
-# freeing memory
+# Freeing memory
 remove(expression_tidy)
 remove(expression_tidy_scaled)
 ```
