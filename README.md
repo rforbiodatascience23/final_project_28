@@ -4,7 +4,7 @@ skrendaskrenduolis - s222858 \
 tudelska - s212846 \
 tado512 - s170362 \
 beleonattila - s213785 \
-s222372 - s222373
+s222372 - s222373 \
 
 # final_project_28
 
