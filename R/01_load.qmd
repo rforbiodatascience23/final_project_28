@@ -43,12 +43,12 @@ the sample from each patient.
 ## Loading data
 
 ```{r}
-# reading each of the 3 data files
+# Reading each of the 3 data files
 patient_data <- read_csv("../_raw/actual.csv")
 expression_indep <- read_csv("../_raw/data_set_ALL_AML_independent.csv")
 expression_train <- read_csv("../_raw/data_set_ALL_AML_train.csv")
 
-# combining the 2 tibbles with gene expression data
+# Combining the 2 tibbles with gene expression data
 expression <- merge(x = expression_indep,
                     y = expression_train,
                     by.x = c("Gene Description",
@@ -71,7 +71,7 @@ write.csv(patient_data,
           row.names = FALSE
           )
  
-# removing objects to free memory
+# Removing objects to free memory
 remove(expression_indep,
        expression_train,
        expression,

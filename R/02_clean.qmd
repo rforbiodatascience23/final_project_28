@@ -21,11 +21,11 @@ library(tidyverse)
 ```{r}
 expression_data <- read_csv("../data/01_expression_data.csv")
 
-# removing gene "call" columns
+# Removing gene "call" columns
 expression_data <- expression_data |>
   select(-matches("^call\\.\\.\\.\\d+")
          )
-# cleaning column names
+# Cleaning column names
 expression_data <- expression_data |>
   rename(gene_description = "Gene Description",
          gene_accession_number = "Gene Accession Number"
@@ -35,11 +35,11 @@ expression_data <- expression_data |>
 ## Transforming data
 
 ```{r}
-# saving gene information
+# Saving gene information
 gene_info <- expression_data |> 
   select(gene_description, gene_accession_number)
 
-# pivoting expression data 
+# Pivoting expression data 
 expression_clean <- expression_data |>
   select(-gene_description) |> 
   pivot_longer(cols = -gene_accession_number,
@@ -64,7 +64,7 @@ write.csv(expression_clean,
           row.names = FALSE
           )
 
-# removing objects to free memory
+# Removing objects to free memory
 remove(expression_data)
 remove(expression_clean)
 ```
